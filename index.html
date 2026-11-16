@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Lolito</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Crect width='34' height='34' rx='9' fill='%23b4532a'/%3E%3Cpath d='M9 19v-3a8 8 0 0 1 16 0v3' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3Crect x='7' y='18' width='5' height='7' rx='2' fill='%23fff'/%3E%3Crect x='22' y='18' width='5' height='7' rx='2' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+[hidden] { display: none !important; }
+:root {
+  --bg: #f4f2ef; --surface: #ffffff; --ink: #1d1a17; --muted: #6b645c; --line: #e2ddd6;
+  --accent: #b4532a; --accent-ink: #ffffff;
+  --shift: #4f46e5; --free: #0d8a7d;
+  --ok: #1e7a3c; --warn: #a15c00; --danger: #b3261e;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-num: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14120f; --surface: #1f1c18; --ink: #efe9e2; --muted: #a59c91; --line: #34302a;
+    --accent: #f08a5d; --accent-ink: #2a1206; --shift: #8f88ff; --free: #3fd0bf;
+    --ok: #5fd38a; --warn: #ffb74d; --danger: #ff8a80; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14120f; --surface: #1f1c18; --ink: #efe9e2; --muted: #a59c91; --line: #34302a;
+  --accent: #f08a5d; --accent-ink: #2a1206; --shift: #8f88ff; --free: #3fd0bf;
+  --ok: #5fd38a; --warn: #ffb74d; --danger: #ff8a80; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scrollbar-gutter: stable; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.45; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 48px; display: flex; flex-direction: column; gap: 20px; }
+h1, h2 { font-family: var(--f-display); margin: 0; }
+h2 { font-size: 18px; font-weight: 700; }
+.num { font-family: var(--f-num); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); font-weight: 600; white-space: nowrap; }
+.hint { color: var(--muted); font-size: 13px; margin: 0; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 7px 12px; min-height: 36px; white-space: nowrap; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.chip { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 4px 10px; font-size: 12px; white-space: nowrap; }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.dot { width: 10px; height: 10px; border-radius: 3px; flex: none; background: var(--c); }
+.t-shift { --c: var(--shift); } .t-free { --c: var(--free); }
+
+/* Marca, menu y franjas laterales */
+.app-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+@media (min-width: 821px) { .app-bar { position: sticky; top: 0; z-index: 6; padding-block: 8px; margin-block: -8px; background: var(--bg); box-shadow: 0 6px 6px -6px rgba(0,0,0,.12); } }
+.marca { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.marca svg { width: 36px; height: 36px; flex: none; }
+.marca h1 { font-size: 26px; font-weight: 700; line-height: 1; letter-spacing: -.01em; }
+.marca small { display: block; margin-top: 4px; font-size: 11.5px; color: var(--accent); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.marca > div { min-width: 0; }
+body::before, body::after { content: ""; position: fixed; top: 0; bottom: 0; width: 6px; opacity: .75; pointer-events: none; z-index: 1;
+  background: linear-gradient(var(--shift) 0 40%, var(--accent) 40% 60%, var(--free) 60% 100%); }
+body::before { left: 0; } body::after { right: 0; transform: scaleY(-1); }
+.tabs { display: flex; gap: 2px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 4px; }
+.tab { display: flex; align-items: center; gap: 7px; border: 0; background: none; border-radius: 8px; padding: 6px 14px; min-height: 36px; font-weight: 600; font-size: 14px; color: var(--muted); white-space: nowrap; }
+.tab svg, .ico svg { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.tab:hover { color: var(--ink); background: var(--bg); }
+.tab[aria-current="page"] { background: var(--accent); color: var(--accent-ink); }
+.extra { display: flex; align-items: center; gap: 6px; }
+.tc { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; font-weight: 600; color: var(--muted); border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 0 2px 0 10px; height: 32px; white-space: nowrap; }
+.tc input { width: 54px; border: 0; background: transparent; font-family: var(--f-num); font-size: 12px; padding: 2px; -moz-appearance: textfield; }
+.tc input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.tc button, .ico { border: 0; background: none; border-radius: 999px; min-width: 28px; height: 28px; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; }
+.ico { border: 1px solid var(--line); background: var(--surface); width: 32px; height: 32px; }
+.tc button:hover, .ico:hover { color: var(--ink); }
+
+/* Fichas */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; min-width: 0; position: relative; overflow: hidden; }
+.panel.ficha::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--c, var(--accent)); }
+.panel-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-width: 0; }
+.panel-head h2 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vista { display: flex; flex-direction: column; gap: 20px; }
+.cols { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.pie { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 8px; background: color-mix(in srgb, var(--c, var(--accent)) 10%, var(--surface)); }
+.grande { font-size: clamp(30px, 6vw, 42px); font-weight: 500; line-height: 1.05; }
+.barra { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.barra i { display: block; height: 100%; background: var(--c, var(--accent)); }
+.frase { margin: 0; font-weight: 500; }
+.frase.ok { color: var(--ok); } .frase.warn { color: var(--warn); }
+.dos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.mini { border: 1px solid color-mix(in srgb, var(--c) 35%, var(--line)); background: color-mix(in srgb, var(--c) 9%, var(--surface)); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.mini .nombre { display: flex; align-items: center; gap: 7px; font-weight: 600; font-size: 13px; white-space: nowrap; }
+.mini .num { font-size: 17px; }
+.mini small { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meta-campo { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+.meta-campo input { width: 96px; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 5px 8px; font-family: var(--f-num); }
+
+/* Filas y estados */
+.filas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.filas li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 4px 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); min-width: 0; }
+.filas li:last-child { border-bottom: 0; }
+.filas .d { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.filas .d span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.filas .d small { color: var(--muted); }
+.filas .d > b, .filas .d > small { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.filas .der { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+.estado { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; color: var(--c); }
+.estado::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.e-cobrado { --c: var(--ok); } .e-pendiente { --c: var(--warn); } .e-atrasado { --c: var(--danger); } .e-curso { --c: var(--accent); } .e-vacio, .e-futuro { --c: var(--muted); }
+.vacio { color: var(--muted); font-size: 14px; margin: 0; padding: 6px 0; }
+.borrar[data-armado] { color: var(--danger); border-color: var(--danger); }
+
+/* Trabajo */
+.arranque { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.go { border: 1px solid color-mix(in srgb, var(--c) 40%, var(--line)); background: color-mix(in srgb, var(--c) 10%, var(--surface)); border-radius: 14px; padding: 22px 18px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; text-align: left; position: relative; overflow: hidden; min-width: 0; }
+.go::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--c); }
+.go:hover:not(:disabled) { border-color: var(--c); }
+.go:disabled { opacity: .45; cursor: not-allowed; }
+.go .play { width: 44px; height: 44px; border-radius: 50%; background: var(--c); display: grid; place-items: center; margin-bottom: 6px; }
+.go .play svg { width: 18px; height: 18px; fill: var(--surface); margin-left: 3px; }
+.go > span:last-child { display: flex; flex-direction: column; min-width: 0; max-width: 100%; }
+.go b { font-family: var(--f-display); font-size: 20px; }
+.go small { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.activo { position: sticky; top: 64px; z-index: 5; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--c); background: color-mix(in srgb, var(--c) 12%, var(--surface)); box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+.activo .reloj { font-size: 28px; font-weight: 500; line-height: 1; }
+.activo .info { display: flex; flex-direction: column; min-width: 0; }
+.activo .info b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.activo .info small { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.activo .info small.alerta { color: var(--warn); font-weight: 600; }
+.activo .ctrl { display: flex; gap: 6px; }
+.activo.pausado .reloj { opacity: .55; }
+
+/* Mes / año */
+.nav-per { display: flex; align-items: center; gap: 6px; }
+.nav-per b { font-family: var(--f-display); font-size: 17px; min-width: 128px; text-align: center; white-space: nowrap; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+th, td { padding: 9px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; border-top: 3px solid var(--c, var(--line)); }
+td.tn, th.tn { background: color-mix(in srgb, var(--c) 8%, var(--surface)); }
+.col-pag { --c: var(--ok); } .col-neto { --c: var(--accent); }
+tbody tr { cursor: pointer; }
+tbody tr:hover td { background: color-mix(in srgb, var(--accent) 6%, var(--surface)); }
+tfoot td { font-weight: 700; border-bottom: 0; }
+
+/* Ventanas */
+.velo { position: fixed; inset: 0; z-index: 7; background: rgba(0,0,0,.25); }
+.pop { position: fixed; top: 96px; right: 24px; width: min(400px, calc(100vw - 32px)); max-height: min(80vh, 640px); z-index: 8; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,.18); }
+.pop-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--line); cursor: move; user-select: none; touch-action: none; }
+.pop-head h2 { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pop-cerrar { border: 0; background: none; font-size: 22px; line-height: 1; padding: 4px 8px; border-radius: 6px; color: var(--muted); }
+.pop-cerrar:hover { color: var(--ink); background: var(--bg); }
+.pop form, .pop .cuerpo { padding: 14px; overflow-y: auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.campo { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.campo.ancho, .ancho { grid-column: 1 / -1; }
+.campo label { font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.campo input { border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 8px 10px; min-height: 40px; width: 100%; min-width: 0; }
+.tipo-sel { display: flex; gap: 6px; }
+.botones { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.msg { margin: 0; font-size: 13px; color: var(--danger); }
+.msg:empty { display: none; }
+.sep { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 10px; }
+.aviso-deshacer { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 10; display: flex; align-items: center; gap: 12px; background: var(--ink); color: var(--bg); padding: 10px 12px 10px 16px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.25); font-size: 14px; width: max-content; max-width: calc(100vw - 32px); }
+.aviso-deshacer .chip { background: transparent; color: var(--bg); border-color: color-mix(in srgb, var(--bg) 50%, transparent); }
+
+@media (max-width: 820px) {
+  .cols, .arranque { grid-template-columns: minmax(0, 1fr); }
+  .wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+  .tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; border-radius: 0; border-width: 1px 0 0; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); }
+  .tab { flex: 1; flex-direction: column; justify-content: center; gap: 3px; padding: 6px 2px; min-height: 50px; font-size: 12px; }
+  .tab svg { width: 20px; height: 20px; }
+  .tab:hover { background: none; }
+  .tab[aria-current="page"] { background: color-mix(in srgb, var(--accent) 14%, var(--surface)); color: var(--accent); }
+  /* Celular: logo, nombre y botones en una fila; el lema completo debajo */
+  .app-bar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 10px; row-gap: 6px; }
+  .marca, .marca > div { display: contents; }
+  .marca small { grid-column: 1 / -1; grid-row: 2; margin-top: 0; }
+  .extra { grid-column: 3; grid-row: 1; }
+  .activo { position: static; }
+  body::before, body::after { display: none; }
+  .pop { top: auto !important; left: 0 !important; right: 0; bottom: 0; width: auto; max-height: 75vh; border-radius: 14px 14px 0 0; padding-bottom: env(safe-area-inset-bottom); }
+  .pop-head { cursor: default; }
+  .aviso-deshacer { bottom: calc(76px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 460px) {
+  .panel { padding: 14px; }
+  .filas .acciones { grid-column: 1 / -1; justify-self: end; }
+  .marca h1 { font-size: 22px; }
+  .marca svg { width: 32px; height: 32px; }
+  .activo { grid-template-columns: minmax(0, 1fr) auto; }
+  .activo .reloj { grid-row: 1; font-size: 24px; }
+  .activo .info { grid-column: 1 / -1; grid-row: 2; }
+  .activo .ctrl { grid-column: 1 / -1; grid-row: 3; }
+  .go { padding: 16px 14px; flex-direction: row; align-items: center; gap: 12px; }
+  .go .play { margin: 0; }
+}
+@media (max-width: 360px) {
+  .tc input { width: 46px; }
+  .marca small { font-size: 10.5px; }
+  .dos { gap: 8px; }
+  .mini { padding: 8px 9px; }
+  .mini .num { font-size: 15px; }
+}
+</style>
+</head><body>
+<div class="wrap">
+  <header class="app-bar">
+    <div class="marca">
+      <svg viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="var(--accent)"/><path d="M9 19v-3a8 8 0 0 1 16 0v3" fill="none" stroke="var(--accent-ink)" stroke-width="2.4" stroke-linecap="round"/><rect x="7" y="18" width="5" height="7" rx="2" fill="var(--accent-ink)"/><rect x="22" y="18" width="5" height="7" rx="2" fill="var(--accent-ink)"/></svg>
+      <div><h1>Lolito</h1><small>Tu aliado en tu manejo de minutos interpretados</small></div>
+    </div>
+    <nav class="tabs" aria-label="Secciones">
+      <button class="tab" type="button" data-ir="resumen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15a9 9 0 0 1 18 0M12 15l4-5"/></svg>Resumen</button>
+      <button class="tab" type="button" data-ir="trabajo"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg>Trabajo</button>
+      <button class="tab" type="button" data-ir="historial"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Historial</button>
+      <button class="tab" type="button" data-ir="anio"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>Año</button>
+    </nav>
+    <div class="extra">
+      <label class="tc" id="tcLabel">TC <input id="tc" type="number" step="0.0001" min="0.01" inputmode="decimal" aria-label="Tipo de cambio, soles por dólar"><button type="button" id="tcAuto" title="Traer el tipo de cambio del día" aria-label="Traer el tipo de cambio del día">↻</button></label>
+      <button class="ico" type="button" id="btnAjustes" title="Ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    </div>
+  </header>
+
+  <div class="activo" id="activo" hidden>
+    <span class="dot"></span>
+    <div class="info"><b id="acTitulo"></b><small id="acNota"></small></div>
+    <span class="reloj num" id="acReloj">00:00</span>
+    <div class="ctrl" id="acCtrl"></div>
+  </div>
+
+  <main class="vista" data-vista="resumen">
+    <div class="cols">
+      <section class="panel ficha">
+        <div class="panel-head"><span class="eyebrow" id="rCiclo">Ciclo</span><span class="eyebrow" id="rPago"></span></div>
+        <div><div class="grande num" id="rGanado">$0.00</div><p class="hint num" id="rSoles"></p><p class="hint num" id="rNeto"></p></div>
+        <div class="barra"><i id="rBarra" style="width:0"></i></div>
+        <p class="frase" id="rFrase"></p>
+        <label class="meta-campo">Meta del ciclo (USD) <input id="rMeta" type="number" min="0" step="1" inputmode="decimal"></label>
+        <div class="dos" id="rTipos"></div>
+      </section>
+      <div class="col">
+        <section class="panel">
+          <div class="panel-head"><h2>Cobros</h2></div>
+          <ul class="filas" id="rCobros"></ul>
+        </section>
+        <section class="panel">
+          <div class="panel-head"><h2>Hoy</h2><span class="num" id="rHoyTotal"></span></div>
+          <ul class="filas" id="rHoy"></ul>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <main class="vista" data-vista="trabajo" hidden>
+    <div class="arranque">
+      <button class="go t-shift" type="button" data-iniciar="shift"><span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg></span><span><b>Shift</b><small id="goShift"></small></span></button>
+      <button class="go t-free" type="button" data-iniciar="freelance"><span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg></span><span><b>Freelance</b><small id="goFree"></small></span></button>
+    </div>
+    <section class="panel">
+      <div class="panel-head"><h2>Trabajado hoy</h2><button class="btn" type="button" data-nuevo>+ Manual</button></div>
+      <ul class="filas" id="tHoy"></ul>
+    </section>
+  </main>
+
+  <main class="vista" data-vista="historial" hidden>
+    <section class="panel">
+      <div class="panel-head">
+        <div class="nav-per"><button class="btn" type="button" id="hAnt" aria-label="Mes anterior">‹</button><b id="hMes"></b><button class="btn" type="button" id="hSig" aria-label="Mes siguiente">›</button></div>
+        <button class="btn" type="button" data-nuevo>+ Registro</button>
+      </div>
+      <div class="dos" id="hTipos"></div>
+      <ul class="filas" id="hLista"></ul>
+    </section>
+  </main>
+
+  <main class="vista" data-vista="anio" hidden>
+    <section class="panel">
+      <div class="panel-head">
+        <div class="nav-per"><button class="btn" type="button" id="aAnt" aria-label="Año anterior">‹</button><b id="aAnio"></b><button class="btn" type="button" id="aSig" aria-label="Año siguiente">›</button></div>
+      </div>
+      <p class="hint">Toca un mes para anotar lo que te pagaron o cambiar su fecha de pago.</p>
+      <div class="scroll"><table>
+        <thead><tr><th>Ciclo</th><th>Calculado</th><th class="tn col-pag">Pagado</th><th>Diferencia</th><th>Comisión</th><th class="tn col-neto">Te llega</th><th>En soles</th><th>Pago</th><th>Estado</th></tr></thead>
+        <tbody id="aFilas"></tbody>
+        <tfoot id="aTotal"></tfoot>
+      </table></div>
+    </section>
+  </main>
+</div>
+
+<div class="velo" id="velo" hidden></div>
+
+<div class="pop" id="popReg" role="dialog" aria-labelledby="prTitulo" hidden>
+  <div class="pop-head"><h2 id="prTitulo">Registro</h2><button class="pop-cerrar" type="button" aria-label="Cerrar">×</button></div>
+  <form id="fReg" novalidate>
+    <div class="campo ancho"><label>Tipo</label><div class="tipo-sel"><button class="chip" type="button" data-tipo="shift">Shift</button><button class="chip" type="button" data-tipo="freelance">Freelance</button></div></div>
+    <div class="campo ancho"><label for="frFecha">Fecha</label><input id="frFecha" type="date"></div>
+    <div class="campo"><label for="frMin">Minutos</label><input id="frMin" type="number" min="0" step="1" inputmode="numeric"></div>
+    <div class="campo" id="frSegCampo"><label for="frSeg">Segundos</label><input id="frSeg" type="number" min="0" max="59" step="1" inputmode="numeric"></div>
+    <p class="hint ancho" id="frNota"></p>
+    <p class="msg ancho" id="frMsg" role="status"></p>
+    <div class="botones ancho"><button type="button" class="btn" data-cerrar>Cancelar</button><button type="submit" class="btn primary">Guardar</button></div>
+  </form>
+</div>
+
+<div class="pop" id="popCiclo" role="dialog" aria-labelledby="pcTitulo" hidden>
+  <div class="pop-head"><h2 id="pcTitulo">Ciclo</h2><button class="pop-cerrar" type="button" aria-label="Cerrar">×</button></div>
+  <form id="fCiclo" novalidate>
+    <p class="hint ancho num" id="pcCalc"></p>
+    <div class="campo"><label for="pcPagado">Pagado (USD)</label><input id="pcPagado" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Aún no"></div>
+    <div class="campo"><label for="pcPago">Fecha de pago</label><input id="pcPago" type="date"></div>
+    <div class="campo ancho"><label for="pcMeta">Meta del ciclo (USD)</label><input id="pcMeta" type="number" min="0" step="1" inputmode="decimal"></div>
+    <p class="hint ancho num" id="pcNeto"></p>
+    <div class="botones ancho"><button type="button" class="btn" data-cerrar>Cancelar</button><button type="submit" class="btn primary">Guardar</button></div>
+  </form>
+</div>
+
+<div class="pop" id="popAjustes" role="dialog" aria-labelledby="paTitulo" hidden>
+  <div class="pop-head"><h2 id="paTitulo">Ajustes</h2><button class="pop-cerrar" type="button" aria-label="Cerrar">×</button></div>
+  <form id="fAjustes" novalidate>
+    <div class="campo"><label for="aaShift">Tarifa Shift (USD/h)</label><input id="aaShift" type="number" min="0" step="0.01" inputmode="decimal"></div>
+    <div class="campo"><label for="aaFree">Tarifa Freelance (USD/h)</label><input id="aaFree" type="number" min="0" step="0.01" inputmode="decimal"></div>
+    <div class="campo"><label for="aaPct">Comisión de envío (%)</label><input id="aaPct" type="number" min="0" step="0.01" inputmode="decimal"></div>
+    <div class="campo"><label for="aaFijo">Comisión fija (USD)</label><input id="aaFijo" type="number" min="0" step="0.01" inputmode="decimal"></div>
+    <div class="campo ancho"><label for="aaMeta">Meta por defecto de cada ciclo (USD)</label><input id="aaMeta" type="number" min="0" step="1" inputmode="decimal"></div>
+    <p class="hint ancho">Las tarifas nuevas se aplican desde el próximo registro; lo ya trabajado conserva su tarifa.</p>
+    <p class="hint ancho" id="aaTc"></p>
+    <div class="botones ancho"><button type="button" class="btn" data-cerrar>Cancelar</button><button type="submit" class="btn primary">Guardar</button></div>
+    <div class="sep botones"><button type="button" class="btn" id="btnCopia">↓ Descargar copia</button><button type="button" class="btn" id="btnRestaurar">Restaurar copia</button><input type="file" id="fCopia" accept="application/json,.json" hidden></div>
+  </form>
+</div>
+
+<div class="aviso-deshacer" id="avisoD" role="status" hidden><span id="avisoTxt"></span><button type="button" class="chip" id="avisoBtn">Deshacer</button></div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var KEY = 'lolito.v1';
+  var SHIFT_SEG = 3600; // cada shift dura 1 hora
+  var AVISO_FREE_SEG = 7200; // aviso si una llamada freelance lleva 2 h sin detenerse
+  // Cronograma de pagos 2026: ciclo (mes trabajado) -> fecha de pago. Editable por ciclo desde la pestaña Año.
+  var CRONOGRAMA = {
+    '2026-01': '2026-02-27', '2026-02': '2026-03-31', '2026-03': '2026-04-30', '2026-04': '2026-05-29',
+    '2026-05': '2026-06-30', '2026-06': '2026-07-31', '2026-07': '2026-08-31', '2026-08': '2026-09-30',
+    '2026-09': '2026-10-30', '2026-10': '2026-11-30', '2026-11': '2026-12-31', '2026-12': '2027-01-29'
+  };
+  var MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  var DIAS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  var NOMBRE = { shift: 'Shift', freelance: 'Freelance' };
+
+  // ---------- Utilidades ----------
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function ymd(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function deYmd(s) { var p = String(s).split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function claveMes(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
+  function nombreCiclo(k) { var p = k.split('-'); return MESES[+p[1] - 1] + ' ' + p[0]; }
+  function fechaCorta(s) { if (!s) return '—'; var d = deYmd(s); return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + String(d.getFullYear()).slice(2); }
+  var fmt2 = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  function usd(n) { return (n < 0 ? '−$' : '$') + fmt2.format(Math.abs(n || 0)); }
+  function soles(n) { return 'S/ ' + fmt2.format(n || 0); }
+  function solesCorto(n) { return n >= 1000 ? 'S/ ' + (n / 1000).toFixed(1) + 'k' : 'S/ ' + Math.round(n); }
+  function reloj(seg) { seg = Math.floor(seg); var hh = Math.floor(seg / 3600), mm = Math.floor(seg % 3600 / 60), ss = seg % 60; return (hh ? hh + ':' + pad(mm) : pad(mm)) + ':' + pad(ss); }
+  function duracion(r) {
+    var s = Math.floor(r.seg);
+    if (r.tipo === 'freelance') return Math.floor(s / 60) + ' min';
+    return Math.floor(s / 60) + 'm ' + pad(s % 60) + 's';
+  }
+  function num(v) { var n = parseFloat(v); return isFinite(n) && n >= 0 ? n : null; }
+  function h(tag, attrs) {
+    var el = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      var v = attrs[k];
+      if (v == null || v === false) return;
+      if (k === 'text') el.textContent = v;
+      else if (k === 'class') el.className = v;
+      else if (k === 'style') el.style.cssText = v;
+      else if (k.slice(0, 2) === 'on') el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? '' : v);
+    });
+    for (var i = 2; i < arguments.length; i++) {
+      var c = arguments[i];
+      if (c == null) continue;
+      el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    }
+    return el;
+  }
+
+  // ---------- Datos ----------
+  // Por ahora en este navegador. Para pasar a Supabase solo cambia `store`; el resto no sabe dónde se guarda.
+  var store = {
+    leer: function () { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } },
+    escribir: function (d) { try { localStorage.setItem(KEY, JSON.stringify(d)); return true; } catch (e) { return false; } }
+  };
+  function vacio() {
+    return { registros: [], ciclos: {}, ajustes: { tarifaShift: 0, tarifaFree: 0, comPct: 0, comFijo: 0, meta: 0, tasa: 3.4, tasaManual: false, tasaFecha: '' } };
+  }
+  var D = store.leer() || vacio();
+  var A = D.ajustes;
+  function guardar() { if (!store.escribir(D)) avisar('No se pudieron guardar tus datos en este navegador.'); }
+  // Toda acción que cambia datos pasa por aquí: guarda, redibuja y ofrece Deshacer
+  function cambiar(txt, fn) {
+    var antes = JSON.stringify(D);
+    fn();
+    guardar(); render();
+    if (txt) avisar(txt, function () { D = JSON.parse(antes); A = D.ajustes; guardar(); render(); });
+  }
+
+  // ---------- Cálculos ----------
+  function activo() { return D.registros.find(function (r) { return r.fin == null; }) || null; }
+  function pausado(r) { var p = r.pausas[r.pausas.length - 1]; return !!p && p.h == null; }
+  function segCorridos(r, ahora) {
+    var fin = r.fin != null ? r.fin : ahora, pausa = 0;
+    r.pausas.forEach(function (p) { pausa += (p.h != null ? p.h : fin) - p.d; });
+    return Math.max(0, (fin - r.inicio - pausa) / 1000);
+  }
+  function segReg(r) { return r.fin == null ? segCorridos(r, Date.now()) : r.seg; }
+  // Shift: se paga cada segundo. Freelance: solo minutos completos (15:54 -> 15 min)
+  function segPagados(r) { var s = segReg(r); return r.tipo === 'shift' ? s : Math.floor(s / 60) * 60; }
+  function monto(r) { return segPagados(r) / 3600 * r.tarifa; }
+  function comision(base) { return base > 0 ? base * A.comPct / 100 + A.comFijo : 0; }
+  function ciclo(k) {
+    var c = D.ciclos[k] || {}, regs = D.registros.filter(function (r) { return r.fecha.slice(0, 7) === k; });
+    var t = { shift: { n: 0, seg: 0, usd: 0 }, freelance: { n: 0, seg: 0, usd: 0 } };
+    regs.forEach(function (r) { var x = t[r.tipo]; x.n++; x.seg += segPagados(r); x.usd += monto(r); });
+    var calc = t.shift.usd + t.freelance.usd, pagado = c.pagado != null ? c.pagado : null;
+    var base = pagado != null ? pagado : calc, com = comision(base), neto = Math.max(0, base - com);
+    var pago = c.pago || CRONOGRAMA[k] || '', hoyK = claveMes(new Date()), estado;
+    if (k > hoyK) estado = 'futuro';
+    else if (k === hoyK) estado = 'curso';
+    else if (pagado != null) estado = 'cobrado';
+    else if (!calc) estado = 'vacio';
+    else if (pago && pago < ymd(new Date())) estado = 'atrasado';
+    else estado = 'pendiente';
+    return { k: k, regs: regs, t: t, calc: calc, pagado: pagado, com: com, neto: neto, pago: pago, estado: estado, meta: c.meta != null ? c.meta : A.meta };
+  }
+  var ESTADO = { cobrado: 'Cobrado', pendiente: 'Pendiente', atrasado: 'Atrasado', curso: 'En curso', vacio: 'Sin trabajo', futuro: '—' };
+  function estadoEl(e) { return h('span', { class: 'estado e-' + e, text: ESTADO[e] }); }
+
+  // ---------- Vista ----------
+  var ui = { vista: 'resumen', mes: claveMes(new Date()), anio: new Date().getFullYear() };
+  try { ui.vista = localStorage.getItem('lolito.vista') || 'resumen'; } catch (e) {}
+
+  function render() {
+    document.querySelectorAll('.tab').forEach(function (b) { b.setAttribute('aria-current', b.dataset.ir === ui.vista ? 'page' : 'false'); });
+    document.querySelectorAll('.vista').forEach(function (v) { v.hidden = v.dataset.vista !== ui.vista; });
+    if (document.activeElement !== $('tc')) $('tc').value = A.tasa;
+    $('tcLabel').title = A.tasaManual ? 'Tipo de cambio editado por ti. ↻ trae el del día.' : 'Tipo de cambio de mercado del ' + fechaCorta(A.tasaFecha) + ' (referencial).';
+    renderActivo(); renderResumen(); renderTrabajo(); renderHistorial(); renderAnio();
+  }
+
+  function filaReg(r, conAcciones) {
+    var der = h('div', { class: 'der' }, h('span', { class: 'num', text: usd(monto(r)) }));
+    var acciones = conAcciones && r.fin != null ? h('div', { class: 'der acciones' },
+      h('button', { class: 'chip', type: 'button', text: 'Editar', onclick: function () { abrirReg(r); } }),
+      h('button', { class: 'chip borrar', type: 'button', text: 'Borrar', onclick: function (ev) { borrarReg(r, ev.currentTarget); } })) : null;
+    var d = deYmd(r.fecha), inicio = new Date(r.inicio);
+    return h('li', null,
+      h('div', { class: 'd t-' + (r.tipo === 'shift' ? 'shift' : 'free') }, h('span', { class: 'dot' }),
+        h('span', null, NOMBRE[r.tipo] + ' · ', r.fin == null ? h('b', { text: 'en curso' }) : h('b', { class: 'num', text: duracion(r) }),
+          h('small', { text: ' · ' + DIAS[d.getDay()] + ' ' + d.getDate() + (r.manual ? '' : ', ' + pad(inicio.getHours()) + ':' + pad(inicio.getMinutes())) }))),
+      der, acciones);
+  }
+  function lista(ul, regs, conAcciones, vacioTxt) {
+    ul.replaceChildren();
+    if (!regs.length) { ul.appendChild(h('li', null, h('p', { class: 'vacio', text: vacioTxt }))); return; }
+    regs.slice().sort(function (a, b) { return b.inicio - a.inicio; }).forEach(function (r) { ul.appendChild(filaReg(r, conAcciones)); });
+  }
+  function tipos(el, c) {
+    el.replaceChildren();
+    [['shift', 't-shift'], ['freelance', 't-free']].forEach(function (x) {
+      var t = c.t[x[0]], horas = t.seg / 3600;
+      el.appendChild(h('div', { class: 'mini ' + x[1] },
+        h('span', { class: 'nombre' }, h('span', { class: 'dot' }), NOMBRE[x[0]]),
+        h('span', { class: 'num', text: usd(t.usd) }),
+        h('small', { text: x[0] === 'shift' ? t.n + (t.n === 1 ? ' shift · ' : ' shifts · ') + horas.toFixed(2) + ' h' : t.n + (t.n === 1 ? ' llamada · ' : ' llamadas · ') + Math.round(t.seg / 60) + ' min' })));
+    });
+  }
+
+  function renderResumen() {
+    var k = claveMes(new Date()), c = ciclo(k), hoy = new Date();
+    $('rCiclo').textContent = 'Ciclo ' + nombreCiclo(k);
+    $('rPago').textContent = c.pago ? 'Pago ' + fechaCorta(c.pago) : '';
+    $('rGanado').textContent = usd(c.calc);
+    $('rSoles').textContent = '≈ ' + soles(c.calc * A.tasa) + ' (TC ' + A.tasa + ')';
+    $('rNeto').textContent = 'Te llegaría ' + usd(c.neto) + ' tras comisión';
+    $('rBarra').style.width = (c.meta > 0 ? Math.min(100, c.calc / c.meta * 100) : 0) + '%';
+    if (document.activeElement !== $('rMeta')) $('rMeta').value = c.meta || '';
+    var frase = $('rFrase');
+    if (!A.tarifaShift && !A.tarifaFree) { frase.className = 'frase warn'; frase.textContent = 'Configura tus tarifas en Ajustes (⚙).'; }
+    else if (!(c.meta > 0)) { frase.className = 'frase'; frase.textContent = 'Define una meta para ver tu avance.'; }
+    else if (c.calc >= c.meta) { frase.className = 'frase ok'; frase.textContent = '¡Meta cumplida! +' + usd(c.calc - c.meta); }
+    else {
+      var falta = c.meta - c.calc, dias = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
+      var ritmo = c.calc / hoy.getDate() * dias, shifts = A.tarifaShift > 0 ? Math.ceil(falta / A.tarifaShift) : null;
+      frase.className = 'frase ' + (ritmo >= c.meta ? 'ok' : 'warn');
+      frase.textContent = 'Te faltan ' + usd(falta) + (shifts != null ? ' ≈ ' + shifts + (shifts === 1 ? ' shift' : ' shifts') : '') + (ritmo >= c.meta ? ' · vas a buen ritmo' : '');
+    }
+    tipos($('rTipos'), c);
+
+    // Cobros: ciclos ya cerrados que aún no se cobran, y el último cobrado
+    var ul = $('rCobros'); ul.replaceChildren();
+    var pend = [], ultimo = null;
+    for (var i = 1; i <= 12; i++) {
+      var x = ciclo(claveMes(new Date(hoy.getFullYear(), hoy.getMonth() - i, 1)));
+      if (x.estado === 'pendiente' || x.estado === 'atrasado') pend.push(x);
+      else if (x.estado === 'cobrado' && !ultimo) ultimo = x;
+    }
+    pend.reverse().concat(ultimo ? [ultimo] : []).forEach(function (x) {
+      ul.appendChild(h('li', { style: 'cursor:pointer', onclick: function () { abrirCiclo(x.k); } },
+        h('div', { class: 'd', style: 'flex-direction:column;align-items:flex-start;gap:0' }, h('b', { text: nombreCiclo(x.k).slice(0, 3) + ' ' + x.k.slice(0, 4) }), h('small', { text: 'Pago ' + fechaCorta(x.pago) })),
+        h('div', { class: 'der' }, h('span', { class: 'num', text: usd(x.pagado != null ? x.pagado : x.calc) }), estadoEl(x.estado))));
+    });
+    if (!ul.children.length) ul.appendChild(h('li', null, h('p', { class: 'vacio', text: 'No tienes cobros pendientes.' })));
+
+    var deHoy = D.registros.filter(function (r) { return r.fecha === ymd(hoy); });
+    lista($('rHoy'), deHoy, false, 'Aún no trabajas hoy.');
+    $('rHoyTotal').textContent = usd(deHoy.reduce(function (s, r) { return s + monto(r); }, 0));
+  }
+
+  function renderTrabajo() {
+    var ac = activo();
+    $('goShift').textContent = usd(A.tarifaShift) + '/h · por segundo';
+    $('goFree').textContent = usd(A.tarifaFree) + '/h · por minuto';
+    document.querySelectorAll('[data-iniciar]').forEach(function (b) { b.disabled = !!ac; });
+    lista($('tHoy'), D.registros.filter(function (r) { return r.fecha === ymd(new Date()); }), true, 'Pulsa Shift o Freelance cuando empieces.');
+  }
+
+  function renderActivo() {
+    var r = activo(), box = $('activo');
+    box.hidden = !r;
+    if (!r) return;
+    var esShift = r.tipo === 'shift', s = segCorridos(r, Date.now()), p = pausado(r);
+    box.style.setProperty('--c', esShift ? 'var(--shift)' : 'var(--free)');
+    box.classList.toggle('pausado', p);
+    $('acTitulo').textContent = NOMBRE[r.tipo] + (p ? ' · en pausa' : ' en curso') + ' · ' + usd(monto(r));
+    $('acReloj').textContent = reloj(s);
+    var nota = $('acNota');
+    if (esShift && s >= SHIFT_SEG) { nota.className = 'alerta'; nota.textContent = 'Llegaste a 1 hora: termina el shift.'; }
+    else if (!esShift && s >= AVISO_FREE_SEG) { nota.className = 'alerta'; nota.textContent = '¿Olvidaste detenerlo? Lleva más de 2 horas.'; }
+    else { nota.className = ''; nota.textContent = esShift ? 'Faltan ' + reloj(SHIFT_SEG - s) + ' para la hora' : 'Se cobran los minutos completos'; }
+    var ctrl = $('acCtrl');
+    if (ctrl.dataset.k !== r.tipo + p) {
+      ctrl.dataset.k = r.tipo + p;
+      ctrl.replaceChildren();
+      if (esShift) ctrl.appendChild(h('button', { class: 'btn', type: 'button', text: p ? '▶ Reanudar' : '⏸ Pausar', onclick: alternarPausa }));
+      ctrl.appendChild(h('button', { class: 'btn primary', type: 'button', text: '■ Terminar', onclick: terminar }));
+    }
+  }
+
+  function renderHistorial() {
+    $('hMes').textContent = nombreCiclo(ui.mes);
+    var c = ciclo(ui.mes);
+    tipos($('hTipos'), c);
+    lista($('hLista'), c.regs, true, 'No hay registros en este mes.');
+  }
+
+  function renderAnio() {
+    $('aAnio').textContent = ui.anio;
+    var tb = $('aFilas'), tot = { calc: 0, pag: 0, com: 0, neto: 0 };
+    tb.replaceChildren();
+    for (var m = 1; m <= 12; m++) {
+      var c = ciclo(ui.anio + '-' + pad(m)), dif = c.pagado != null ? c.pagado - c.calc : null;
+      tot.calc += c.calc; tot.pag += c.pagado || 0; tot.com += c.com; tot.neto += c.neto;
+      tb.appendChild(h('tr', { onclick: abrirCiclo.bind(null, c.k) },
+        h('td', { text: MESES[m - 1] }),
+        h('td', { class: 'num', text: usd(c.calc) }),
+        h('td', { class: 'num tn col-pag', text: c.pagado != null ? usd(c.pagado) : '—' }),
+        h('td', { class: 'num', style: dif == null ? '' : 'color:var(' + (dif < 0 ? '--danger' : '--ok') + ')', text: dif == null ? '—' : (dif > 0 ? '+' : '') + usd(dif) }),
+        h('td', { class: 'num', text: c.com ? '−' + usd(c.com) : '—' }),
+        h('td', { class: 'num tn col-neto', text: usd(c.neto) }),
+        h('td', { class: 'num', text: soles(c.neto * A.tasa) }),
+        h('td', { class: 'num', text: fechaCorta(c.pago) }),
+        h('td', null, estadoEl(c.estado))));
+    }
+    $('aTotal').replaceChildren(h('tr', null, h('td', { text: 'Total' }), h('td', { class: 'num', text: usd(tot.calc) }),
+      h('td', { class: 'num tn col-pag', text: usd(tot.pag) }), h('td'), h('td', { class: 'num', text: tot.com ? '−' + usd(tot.com) : '—' }),
+      h('td', { class: 'num tn col-neto', text: usd(tot.neto) }), h('td', { class: 'num', text: soles(tot.neto * A.tasa) }), h('td'), h('td')));
+  }
+
+  // ---------- Cronómetro ----------
+  function iniciar(tipo) {
+    if (activo()) return;
+    var tarifa = tipo === 'shift' ? A.tarifaShift : A.tarifaFree;
+    cambiar(NOMBRE[tipo] + ' iniciado.', function () {
+      D.registros.push({ id: 'r' + Date.now(), tipo: tipo, fecha: ymd(new Date()), inicio: Date.now(), pausas: [], fin: null, seg: null, tarifa: tarifa });
+    });
+    if (!tarifa) avisar('Ojo: la tarifa de ' + NOMBRE[tipo] + ' está en $0. Puedes cambiarla en Ajustes.');
+  }
+  function alternarPausa() {
+    var r = activo(); if (!r) return;
+    var p = pausado(r);
+    cambiar(p ? 'Shift reanudado.' : 'Shift en pausa.', function () {
+      if (p) r.pausas[r.pausas.length - 1].h = Date.now(); else r.pausas.push({ d: Date.now(), h: null });
+    });
+  }
+  function terminar() {
+    var r = activo(); if (!r) return;
+    var ahora = Date.now(), s = segCorridos(r, ahora), tope = r.tipo === 'shift' && s > SHIFT_SEG;
+    cambiar(tope ? 'Se guardó 1 hora, lo que dura un shift. Si fue distinto, edítalo.' : NOMBRE[r.tipo] + ' guardado: ' + (r.tipo === 'shift' ? reloj(s) : Math.floor(s / 60) + ' min') + '.', function () {
+      if (pausado(r)) r.pausas[r.pausas.length - 1].h = ahora;
+      r.fin = ahora;
+      r.seg = Math.floor(tope ? SHIFT_SEG : s);
+    });
+  }
+  setInterval(function () { if (activo()) renderActivo(); }, 1000);
+
+  // ---------- Registros: manual, editar, borrar ----------
+  var editando = null, tipoForm = 'shift';
+  function ponerTipo(t) {
+    tipoForm = t;
+    document.querySelectorAll('[data-tipo]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.tipo === t); });
+    $('frSegCampo').hidden = t !== 'shift';
+    $('frNota').textContent = t === 'shift' ? 'Máximo 60 minutos. Se cobra cada segundo.' : 'Se cobran solo los minutos completos.';
+  }
+  function abrirReg(r) {
+    editando = r || null;
+    $('prTitulo').textContent = r ? 'Editar registro' : 'Registro manual';
+    ponerTipo(r ? r.tipo : 'shift');
+    $('frFecha').value = r ? r.fecha : ymd(new Date());
+    $('frMin').value = r ? Math.floor(r.seg / 60) : '';
+    $('frSeg').value = r ? Math.floor(r.seg % 60) : '';
+    $('frMsg').textContent = '';
+    abrir($('popReg'));
+    $('frMin').focus();
+  }
+  document.querySelectorAll('[data-tipo]').forEach(function (b) { b.addEventListener('click', function () { ponerTipo(b.dataset.tipo); }); });
+  document.querySelectorAll('[data-nuevo]').forEach(function (b) { b.addEventListener('click', function () { abrirReg(null); }); });
+  $('fReg').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var f = $('frFecha').value, mi = num($('frMin').value) || 0, se = tipoForm === 'shift' ? (num($('frSeg').value) || 0) : 0;
+    var seg = Math.floor(mi) * 60 + Math.floor(se);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(f)) return void ($('frMsg').textContent = 'Elige una fecha.');
+    if (se > 59) return void ($('frMsg').textContent = 'Los segundos van de 0 a 59.');
+    if (!seg) return void ($('frMsg').textContent = 'Escribe cuánto duró.');
+    if (tipoForm === 'shift' && seg > SHIFT_SEG) return void ($('frMsg').textContent = 'Un shift dura como máximo 60 minutos.');
+    var r = editando;
+    cerrar();
+    cambiar(r ? 'Registro actualizado.' : 'Registro agregado.', function () {
+      if (r) {
+        if (r.tipo !== tipoForm) r.tarifa = tipoForm === 'shift' ? A.tarifaShift : A.tarifaFree;
+        r.tipo = tipoForm; r.seg = seg;
+        if (r.fecha !== f) { r.fecha = f; r.inicio = deYmd(f).getTime() + 12 * 3600e3; r.manual = true; }
+      } else {
+        D.registros.push({ id: 'r' + Date.now(), tipo: tipoForm, fecha: f, inicio: deYmd(f).getTime() + 12 * 3600e3, pausas: [], fin: deYmd(f).getTime() + 12 * 3600e3, seg: seg, manual: true,
+          tarifa: tipoForm === 'shift' ? A.tarifaShift : A.tarifaFree });
+      }
+    });
+  });
+  // Primer clic arma el botón; el segundo borra (con Deshacer)
+  function borrarReg(r, btn) {
+    if (!btn.hasAttribute('data-armado')) {
+      btn.setAttribute('data-armado', ''); btn.textContent = '¿Borrar?';
+      setTimeout(function () { if (btn.isConnected) { btn.removeAttribute('data-armado'); btn.textContent = 'Borrar'; } }, 4000);
+      return;
+    }
+    cambiar('Registro borrado.', function () { D.registros = D.registros.filter(function (x) { return x !== r; }); });
+  }
+
+  // ---------- Ciclo ----------
+  var cicloAbierto = null;
+  function abrirCiclo(k) {
+    var c = ciclo(k);
+    cicloAbierto = k;
+    $('pcTitulo').textContent = nombreCiclo(k);
+    $('pcCalc').textContent = 'Calculado por Lolito: ' + usd(c.calc);
+    $('pcPagado').value = c.pagado != null ? c.pagado : '';
+    $('pcPago').value = c.pago;
+    $('pcMeta').value = c.meta || '';
+    vistaNeto();
+    abrir($('popCiclo'));
+  }
+  function vistaNeto() {
+    var p = num($('pcPagado').value), base = p != null && $('pcPagado').value !== '' ? p : ciclo(cicloAbierto).calc, com = comision(base);
+    $('pcNeto').textContent = 'Comisión ' + usd(com) + ' → te llega ' + usd(Math.max(0, base - com)) + ' ≈ ' + soles(Math.max(0, base - com) * A.tasa);
+  }
+  $('pcPagado').addEventListener('input', vistaNeto);
+  $('fCiclo').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var k = cicloAbierto, pagado = $('pcPagado').value === '' ? null : num($('pcPagado').value), pago = $('pcPago').value, meta = num($('pcMeta').value);
+    cerrar();
+    cambiar(nombreCiclo(k) + ' actualizado.', function () {
+      var c = D.ciclos[k] = D.ciclos[k] || {};
+      c.pagado = pagado;
+      c.pago = pago && pago !== CRONOGRAMA[k] ? pago : undefined;
+      c.meta = meta != null && meta !== A.meta ? meta : undefined;
+    });
+  });
+  $('rMeta').addEventListener('change', function () {
+    var k = claveMes(new Date()), meta = num(this.value);
+    cambiar('Meta de ' + nombreCiclo(k) + ' actualizada.', function () { (D.ciclos[k] = D.ciclos[k] || {}).meta = meta != null ? meta : undefined; });
+  });
+
+  // ---------- Ajustes ----------
+  $('btnAjustes').addEventListener('click', function () {
+    $('aaShift').value = A.tarifaShift || ''; $('aaFree').value = A.tarifaFree || '';
+    $('aaPct').value = A.comPct || ''; $('aaFijo').value = A.comFijo || ''; $('aaMeta').value = A.meta || '';
+    $('aaTc').textContent = 'Tipo de cambio: ' + A.tasa + (A.tasaManual ? ' (editado por ti).' : ' (mercado, ' + fechaCorta(A.tasaFecha) + ').') + ' Se edita arriba, junto a “TC”.';
+    abrir($('popAjustes'));
+  });
+  $('fAjustes').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var v = { tarifaShift: num($('aaShift').value) || 0, tarifaFree: num($('aaFree').value) || 0, comPct: num($('aaPct').value) || 0, comFijo: num($('aaFijo').value) || 0, meta: num($('aaMeta').value) || 0 };
+    cerrar();
+    cambiar('Ajustes guardados.', function () { Object.assign(A, v); });
+  });
+  $('tc').addEventListener('change', function () {
+    var v = num(this.value);
+    if (!v) { this.value = A.tasa; return; }
+    cambiar('Tipo de cambio: ' + v + '.', function () { A.tasa = v; A.tasaManual = true; });
+  });
+  // Tipo de cambio de mercado del día (referencial). Si lo editaste, se respeta hasta que pulses ↻.
+  function traerTasa(forzar) {
+    if (!forzar && (A.tasaManual || A.tasaFecha === ymd(new Date()))) return;
+    fetch('https://open.er-api.com/v6/latest/USD', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+      var v = j && j.rates && j.rates.PEN;
+      if (!v) throw new Error('sin tasa');
+      v = Math.round(v * 10000) / 10000;
+      cambiar(forzar ? 'Tipo de cambio del día: ' + v + '.' : '', function () { A.tasa = v; A.tasaManual = false; A.tasaFecha = ymd(new Date()); });
+    }).catch(function () { if (forzar) avisar('No se pudo traer el tipo de cambio. Revisa tu conexión.'); });
+  }
+  $('tcAuto').addEventListener('click', function () { traerTasa(true); });
+
+  // ---------- Copia de seguridad ----------
+  function descargarCopia() {
+    var a = h('a', { href: URL.createObjectURL(new Blob([JSON.stringify(D, null, 2)], { type: 'application/json' })), download: 'copia-lolito-' + ymd(new Date()) + '.json' });
+    a.click(); URL.revokeObjectURL(a.href);
+  }
+  $('btnCopia').addEventListener('click', descargarCopia);
+  $('btnRestaurar').addEventListener('click', function () { $('fCopia').click(); });
+  $('fCopia').addEventListener('change', function (ev) {
+    var f = ev.target.files[0]; ev.target.value = '';
+    if (!f) return;
+    f.text().then(function (t) {
+      var d = JSON.parse(t);
+      if (!Array.isArray(d.registros) || !d.ajustes || !d.ciclos) throw new Error('copia');
+      if (!confirm('¿Restaurar esta copia con ' + d.registros.length + ' registros? Reemplazará lo que tienes ahora.')) return;
+      if (prompt('Para confirmar, escribe RESTAURAR. Antes se descargará una copia de lo que tienes ahora.') !== 'RESTAURAR') return;
+      descargarCopia();
+      cerrar();
+      cambiar('Copia restaurada.', function () { D = d; A = D.ajustes; });
+    }).catch(function () { avisar('No se pudo restaurar: revisa que sea una copia de Lolito.'); });
+  });
+
+  // ---------- Ventanas y avisos ----------
+  var popAbierto = null;
+  function abrir(pop) { cerrar(); popAbierto = pop; pop.hidden = false; $('velo').hidden = false; }
+  function cerrar() { if (popAbierto) popAbierto.hidden = true; popAbierto = null; $('velo').hidden = true; }
+  $('velo').addEventListener('click', cerrar);
+  document.querySelectorAll('.pop-cerrar, [data-cerrar]').forEach(function (b) { b.addEventListener('click', cerrar); });
+  addEventListener('keydown', function (ev) { if (ev.key === 'Escape') cerrar(); });
+  function arrastrable(pop) {
+    var head = pop.querySelector('.pop-head');
+    head.addEventListener('pointerdown', function (ev) {
+      if (ev.target.closest('button') || matchMedia('(max-width: 820px)').matches) return;
+      var r = pop.getBoundingClientRect(), dx = ev.clientX - r.left, dy = ev.clientY - r.top;
+      function mover(e) {
+        pop.style.left = Math.max(0, Math.min(innerWidth - r.width, e.clientX - dx)) + 'px';
+        pop.style.top = Math.max(0, Math.min(innerHeight - 48, e.clientY - dy)) + 'px';
+        pop.style.right = 'auto';
+      }
+      function soltar() { removeEventListener('pointermove', mover); removeEventListener('pointerup', soltar); }
+      addEventListener('pointermove', mover); addEventListener('pointerup', soltar);
+    });
+  }
+  document.querySelectorAll('.pop').forEach(arrastrable);
+  var deshacer = null, avisoT;
+  function cerrarAviso() { clearTimeout(avisoT); deshacer = null; $('avisoD').hidden = true; }
+  function avisar(txt, fn) {
+    clearTimeout(avisoT);
+    deshacer = fn || null;
+    $('avisoBtn').hidden = !fn;
+    $('avisoTxt').textContent = txt;
+    $('avisoD').hidden = false;
+    avisoT = setTimeout(cerrarAviso, 8000);
+  }
+  $('avisoBtn').addEventListener('click', function () { var fn = deshacer; cerrarAviso(); if (fn) fn(); });
+
+  // ---------- Navegación ----------
+  document.querySelectorAll('.tab').forEach(function (b) {
+    b.addEventListener('click', function () { ui.vista = b.dataset.ir; try { localStorage.setItem('lolito.vista', ui.vista); } catch (e) {} render(); });
+  });
+  document.querySelectorAll('[data-iniciar]').forEach(function (b) { b.addEventListener('click', function () { iniciar(b.dataset.iniciar); }); });
+  function moverMes(n) { var p = ui.mes.split('-'); ui.mes = claveMes(new Date(+p[0], +p[1] - 1 + n, 1)); render(); }
+  $('hAnt').addEventListener('click', function () { moverMes(-1); });
+  $('hSig').addEventListener('click', function () { moverMes(1); });
+  $('aAnt').addEventListener('click', function () { ui.anio--; render(); });
+  $('aSig').addEventListener('click', function () { ui.anio++; render(); });
+  // Si cambia el día con la app abierta, o vuelves a la pestaña, redibuja
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) { D = store.leer() || D; A = D.ajustes; render(); traerTasa(false); } });
+
+  render();
+  traerTasa(false);
+})();
+</script>
+</body></html>
