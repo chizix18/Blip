@@ -6,7 +6,7 @@
 <style>
 [hidden] { display: none !important; }
 :root {
-  --bg: #f4f2ef; --surface: #ffffff; --ink: #1d1a17; --muted: #6b645c; --line: #e2ddd6;
+  --bg: #e8efe9; --surface: #ffffff; --ink: #1d1a17; --muted: #5f6a62; --line: #d4ded6;
   --accent: #b4532a; --accent-ink: #ffffff;
   --shift: #4f46e5; --free: #0d8a7d;
   --ok: #1e7a3c; --warn: #a15c00; --danger: #b3261e;
@@ -40,22 +40,9 @@ h2 { font-size: 18px; font-weight: 700; }
 .sub b { color: var(--ink); font-weight: 600; }
 
 /* Gatito: en computadora fijo en la esquina; en celular al final de la página */
-.gato { width: 130px; align-self: flex-end; margin-top: -8px; pointer-events: none; }
-.gato * { stroke: #1d1a17; stroke-width: 3.4; stroke-linejoin: round; stroke-linecap: round; }
-.gato .blanco, .gato .lente { fill: #ffffff; }
-.gato .rosa { fill: #f6a8a8; stroke: none; }
-.gato .rubor { fill: #f9c0c0; stroke: none; }
-.gato .ojo, .gato .huella { fill: #1d1a17; stroke: none; }
-.gato .huella * { stroke: none; fill: #ffffff; }
-.gato .brillo { fill: #ffffff; stroke: none; }
-.gato .linea, .gato .banda { fill: none; }
-.gato .banda { stroke-width: 5; }
-.gato .fina { stroke-width: 2.4; }
-.gato .copa { fill: var(--accent); }
-.gato .lap { fill: #dfe5ee; }
-.gato .teclado { fill: #c3ccd8; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .gato .linea:first-child { stroke: var(--muted); } }
-:root[data-theme="dark"] .gato .linea:first-child { stroke: var(--muted); }
+.gato { width: 140px; height: auto; align-self: flex-end; margin-top: -8px; pointer-events: none; mix-blend-mode: multiply; } /* el blanco de la imagen se funde con el fondo */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .gato { mix-blend-mode: normal; border-radius: 18px; } }
+:root[data-theme="dark"] .gato { mix-blend-mode: normal; border-radius: 18px; } /* en oscuro: como calcomanía */
 @media (min-width: 1400px) { .gato { position: fixed; right: 26px; bottom: 18px; margin: 0; width: 150px; } }
 button, input { font: inherit; color: inherit; }
 button { cursor: pointer; }
@@ -370,33 +357,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     </section>
   </main>
 
-  <svg class="gato" viewBox="0 0 160 140" aria-hidden="true">
-    <path class="linea" d="M6 128 H154"/>
-    <!-- cuerpo -->
-    <path class="blanco" d="M62 90 C56 106 56 120 60 128 H120 C124 118 124 104 116 90 Z"/>
-    <!-- cabeza con orejas -->
-    <path class="blanco" d="M46 62 C44 40 46 22 54 10 C63 14 72 19 80 24 Q88 22 96 24 C104 19 113 14 122 10 C130 22 132 40 130 62 C130 86 112 98 88 98 C64 98 46 86 46 62 Z"/>
-    <path class="rosa" d="M57 19 L58 35 L71 27 Z M119 19 L118 35 L105 27 Z"/>
-    <!-- audífonos -->
-    <path class="banda" d="M42 60 C38 4 138 4 134 60"/>
-    <rect class="copa" x="34" y="52" width="13" height="22" rx="6"/><rect class="copa" x="129" y="52" width="13" height="22" rx="6"/>
-    <path class="banda" style="stroke-width:3" d="M40 74 C42 86 52 90 62 89"/><circle class="copa" cx="64" cy="89" r="3.5"/>
-    <!-- mejillas, lentes y ojos -->
-    <ellipse class="rubor" cx="59" cy="79" rx="6" ry="3.5"/><ellipse class="rubor" cx="117" cy="79" rx="6" ry="3.5"/>
-    <rect class="lente" x="52" y="44" width="31" height="28" rx="13"/><rect class="lente" x="93" y="44" width="31" height="28" rx="13"/>
-    <path class="linea" d="M83 54 Q88 50 93 54"/>
-    <circle class="ojo" cx="68" cy="58" r="8"/><circle class="ojo" cx="108" cy="58" r="8"/>
-    <circle class="brillo" cx="65" cy="55" r="2.6"/><circle class="brillo" cx="105" cy="55" r="2.6"/>
-    <path class="ojo" d="M85 68 h6 l-3 3.2 z"/>
-    <path class="linea fina" d="M88 71 q-2.5 3.5 -5.5 1.5 M88 71 q2.5 3.5 5.5 1.5 M45 70 h-13 M46 75 l-12 4 M131 70 h13 M130 75 l12 4"/>
-    <!-- laptop -->
-    <path class="lap" d="M14 82 L76 74 L82 124 L24 131 Z"/>
-    <g class="huella"><ellipse cx="48" cy="106" rx="6" ry="5"/><circle cx="40" cy="98" r="2.3"/><circle cx="47" cy="95" r="2.3"/><circle cx="54" cy="97" r="2.3"/></g>
-    <path class="teclado" d="M82 124 L98 127 L86 133 L30 135 L24 131 Z"/>
-    <!-- pata con pulgar arriba -->
-    <path class="blanco" d="M118 100 C118 94 122 92 126 94 C124 86 128 78 133 80 C137 82 136 90 134 96 C142 96 146 102 144 110 C142 120 134 124 126 122 C120 120 116 112 118 100 Z"/>
-    <path class="linea fina" d="M121 108 h9 M122 115 h8"/>
-  </svg>
+  <img class="gato" src="gato.jpg" alt="" width="140" height="140">
 </div>
 
 <div class="velo" id="velo" hidden></div>
