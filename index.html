@@ -199,6 +199,12 @@ tfoot td { font-weight: 700; border-bottom: 0; }
 .msg { margin: 0; font-size: 13px; color: var(--danger); }
 .msg:empty { display: none; }
 .sep { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 10px; }
+.login { position: fixed; inset: 0; z-index: 9; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.login-caja { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 18px; position: relative; overflow: hidden; }
+.login-caja::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--accent); }
+.login-caja .marca small { white-space: normal; }
+.login form { display: flex; flex-direction: column; gap: 12px; }
+.login .hint:empty { display: none; }
 .aviso-deshacer { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 10; display: flex; align-items: center; gap: 12px; background: var(--ink); color: var(--bg); padding: 10px 12px 10px 16px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.25); font-size: 14px; width: max-content; max-width: calc(100vw - 32px); }
 .aviso-deshacer .chip { background: transparent; color: var(--bg); border-color: color-mix(in srgb, var(--bg) 50%, transparent); }
 
@@ -412,8 +418,23 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     <p class="hint ancho">Las tarifas nuevas se aplican desde el próximo registro; lo ya trabajado conserva su tarifa.</p>
     <p class="hint ancho" id="aaTc"></p>
     <div class="botones ancho"><button type="button" class="btn" data-cerrar>Cancelar</button><button type="submit" class="btn primary">Guardar</button></div>
-    <div class="sep botones"><button type="button" class="btn" id="btnCopia">↓ Descargar copia</button><button type="button" class="btn" id="btnRestaurar">Restaurar copia</button><input type="file" id="fCopia" accept="application/json,.json" hidden></div>
+    <div class="sep botones"><button type="button" class="btn" id="btnCopia">↓ Descargar copia</button><button type="button" class="btn" id="btnRestaurar">Restaurar copia</button><button type="button" class="btn" id="btnSalir" hidden>Cerrar sesión</button><input type="file" id="fCopia" accept="application/json,.json" hidden></div>
   </form>
+</div>
+
+<div class="login" id="login" hidden>
+  <div class="login-caja">
+    <div class="marca">
+      <svg viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="var(--accent)"/><path d="M9 19v-3a8 8 0 0 1 16 0v3" fill="none" stroke="var(--accent-ink)" stroke-width="2.4" stroke-linecap="round"/><rect x="7" y="18" width="5" height="7" rx="2" fill="var(--accent-ink)"/><rect x="22" y="18" width="5" height="7" rx="2" fill="var(--accent-ink)"/></svg>
+      <div><h1>Lolito</h1><small>Tu aliado en tu manejo de minutos interpretados</small></div>
+    </div>
+    <form id="lForm" novalidate>
+      <div class="campo"><label for="lEmail">Correo</label><input id="lEmail" type="email" autocomplete="username"></div>
+      <div class="campo"><label for="lPass">Contraseña</label><input id="lPass" type="password" autocomplete="current-password"></div>
+      <button class="btn primary" type="submit" id="lBtn">Entrar</button>
+    </form>
+    <p class="hint" id="lMsg" role="status"></p>
+  </div>
 </div>
 
 <div class="aviso-deshacer" id="avisoD" role="status" hidden><span id="avisoTxt"></span><button type="button" class="chip" id="avisoBtn">Deshacer</button></div>
@@ -475,9 +496,15 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     return el;
   }
 
+  // ---------- Conexión ----------
+  // Datos del proyecto de Supabase (Project Settings → API). La clave publicable puede ir aquí: la protege RLS.
+  // Si se dejan vacíos, Lolito guarda solo en este navegador.
+  var SUPABASE_URL = '';
+  var SUPABASE_KEY = '';
+  var nube = !!(SUPABASE_URL && SUPABASE_KEY);
+
   // ---------- Datos ----------
-  // Por ahora en este navegador. Para pasar a Supabase solo cambia `store`; el resto no sabe dónde se guarda.
-  var store = {
+  var local = {
     leer: function () { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } },
     escribir: function (d) { try { localStorage.setItem(KEY, JSON.stringify(d)); return true; } catch (e) { return false; } }
   };
@@ -493,8 +520,97 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     D.registros.forEach(function (r) { if (r.tipo === 'shift' && r.fin == null && r.bloque == null) r.bloque = inicioHora(r.inicio); }); // shift en curso de antes de los bloques
   }
   function inicioHora(ms) { var d = new Date(ms); d.setMinutes(0, 0, 0); return d.getTime(); }
-  usar(store.leer());
-  function guardar() { if (!store.escribir(D)) avisar('No se pudieron guardar tus datos en este navegador.'); }
+  usar(nube ? null : local.leer());
+
+  // ---------- Supabase ----------
+  // Tabla `registros` (un shift o llamada por fila) y una fila en `ajustes` con el resto (ajustes, ciclos, plan).
+  // Se sube solo lo que cambió desde la última vez que la nube y esta pantalla coincidían.
+  var sb = null, uid = null, listo = false, guardando = 0, refresco = null;
+  var firmas = {}, firmaAj = ''; // lo que hay en la nube: id -> JSON del registro, y JSON de ajustes
+  function chk(r) { if (r && r.error) throw r.error; return r; }
+  // JSON con las claves ordenadas: la nube (jsonb) reordena las claves y así se comparan bien
+  function canon(v) {
+    return JSON.stringify(v, function (k, x) {
+      return x && typeof x === 'object' && !Array.isArray(x) ? Object.keys(x).sort().reduce(function (o, c) { o[c] = x[c]; return o; }, {}) : x;
+    });
+  }
+  function restoDatos() { return { ajustes: D.ajustes, ciclos: D.ciclos, plan: D.plan }; }
+  function guardar() {
+    if (!nube) { if (!local.escribir(D)) avisar('No se pudieron guardar tus datos en este navegador.'); return; }
+    if (!listo || !uid) return; // nunca guardar antes de cargar: un estado vacío pisaría los datos reales
+    var ups = [], vivos = {}, aj = canon(restoDatos()), ajAntes = firmaAj;
+    D.registros.forEach(function (r) { var j = canon(r); vivos[r.id] = 1; if (firmas[r.id] !== j) ups.push({ user_id: uid, id: r.id, datos: r, j: j }); });
+    var dels = Object.keys(firmas).filter(function (id) { return !vivos[id]; });
+    if (!ups.length && !dels.length && aj === ajAntes) return;
+    var previas = {};
+    ups.forEach(function (f) { previas[f.id] = firmas[f.id]; firmas[f.id] = f.j; delete f.j; });
+    dels.forEach(function (id) { previas[id] = firmas[id]; delete firmas[id]; });
+    firmaAj = aj;
+    guardando++;
+    Promise.all([
+      ups.length ? sb.from('registros').upsert(ups, { onConflict: 'user_id,id' }).then(chk) : null,
+      dels.length ? sb.from('registros').delete().in('id', dels).then(chk) : null,
+      aj !== ajAntes ? sb.from('ajustes').upsert({ user_id: uid, datos: JSON.parse(aj), actualizado: new Date().toISOString() }).then(chk) : null
+    ]).catch(function () {
+      // se deshace la marca para reintentar en el próximo cambio
+      Object.keys(previas).forEach(function (id) { if (previas[id] == null) delete firmas[id]; else firmas[id] = previas[id]; });
+      ups.forEach(function (f) { firmas[f.id] = '?'; });
+      firmaAj = '?';
+      avisar('No se pudieron guardar tus datos. Revisa tu conexión.');
+    }).then(function () { guardando--; });
+  }
+  function traerRegistros(desde, acc) { // de 1000 en 1000, el límite por consulta
+    return sb.from('registros').select('id,datos').range(desde, desde + 999).then(chk).then(function (r) {
+      acc = acc.concat(r.data || []);
+      return (r.data || []).length === 1000 ? traerRegistros(desde + 1000, acc) : acc;
+    });
+  }
+  function cargar() {
+    if (!sb || !uid) return Promise.resolve();
+    return Promise.all([traerRegistros(0, []), sb.from('ajustes').select('datos').maybeSingle().then(chk)]).then(function (v) {
+      if (guardando) return; // no recargar mientras se guarda
+      var f = {}, aj = v[1].data ? v[1].data.datos : null, fa = aj ? canon(aj) : '';
+      v[0].forEach(function (x) { f[x.id] = canon(x.datos); });
+      var igual = listo && fa === firmaAj && Object.keys(f).length === Object.keys(firmas).length && Object.keys(f).every(function (id) { return f[id] === firmas[id]; });
+      if (igual) return; // sin cambios no se redibuja: así no se borra lo que estás escribiendo
+      firmas = f; firmaAj = fa;
+      var d = vacio();
+      if (aj) { d.ajustes = Object.assign(d.ajustes, aj.ajustes); d.ciclos = aj.ciclos || {}; d.plan = aj.plan || {}; }
+      d.registros = v[0].map(function (x) { return x.datos; });
+      usar(d);
+      var primera = !listo;
+      listo = true;
+      $('login').hidden = true;
+      render(); rodar();
+      if (primera) traerTasa(false);
+    }).catch(function () { if (listo) avisar('No se pudieron cargar tus datos. Revisa tu conexión.'); else $('lMsg').textContent = 'No se pudieron cargar tus datos. Revisa tu conexión y recarga.'; });
+  }
+  function sesion(s) {
+    if (s && s.user) {
+      if (uid === s.user.id) return;
+      uid = s.user.id;
+      $('lForm').hidden = true; $('lPass').value = ''; $('lMsg').textContent = 'Cargando tus datos…';
+      cargar();
+      if (!refresco) refresco = setInterval(cargar, 30000);
+    } else {
+      uid = null; listo = false; firmas = {}; firmaAj = '';
+      if (refresco) { clearInterval(refresco); refresco = null; }
+      usar(null); render();
+      $('login').hidden = false; $('lForm').hidden = false; $('lMsg').textContent = '';
+    }
+  }
+  function conectar() {
+    $('login').hidden = false; $('lForm').hidden = true; $('lMsg').textContent = 'Conectando…';
+    var s = document.createElement('script'); // la librería se carga solo si hay nube
+    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
+    s.onerror = function () { $('lMsg').textContent = 'No se pudo conectar. Revisa tu conexión y recarga.'; };
+    s.onload = function () {
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      sb.auth.getSession().then(function (r) { sesion(r.data && r.data.session); });
+      sb.auth.onAuthStateChange(function (ev, ses) { setTimeout(function () { sesion(ev === 'SIGNED_OUT' ? null : ses); }, 0); });
+    };
+    document.head.appendChild(s);
+  }
   // Toda acción que cambia datos pasa por aquí: guarda, redibuja y ofrece Deshacer
   function cambiar(txt, fn) {
     var antes = JSON.stringify(D);
@@ -1064,11 +1180,28 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   $('aAnt').addEventListener('click', function () { ui.anio--; render(); });
   $('aSig').addEventListener('click', function () { ui.anio++; render(); });
   // Si cambia el día con la app abierta, o vuelves a la pestaña, redibuja
-  document.addEventListener('visibilitychange', function () { if (!document.hidden) { usar(store.leer() || D); render(); rodar(); traerTasa(false); } });
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) return;
+    if (nube) { cargar(); if (!listo) return; } else usar(local.leer() || D);
+    render(); rodar(); traerTasa(false);
+  });
+  $('lForm').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var email = $('lEmail').value.trim(), pass = $('lPass').value;
+    if (!sb) return;
+    if (!email || !pass) { $('lMsg').textContent = 'Escribe tu correo y contraseña.'; return; }
+    $('lBtn').disabled = true; $('lMsg').textContent = 'Entrando…';
+    sb.auth.signInWithPassword({ email: email, password: pass }).then(function (r) {
+      $('lBtn').disabled = false;
+      $('lMsg').textContent = r.error ? 'Correo o contraseña incorrectos.' : '';
+    }).catch(function () { $('lBtn').disabled = false; $('lMsg').textContent = 'No se pudo conectar. Inténtalo otra vez.'; });
+  });
+  $('btnSalir').hidden = !nube;
+  $('btnSalir').addEventListener('click', function () { cerrar(); if (sb) sb.auth.signOut(); });
 
   render();
-  rodar();
-  traerTasa(false);
+  if (nube) conectar();
+  else { rodar(); traerTasa(false); }
 })();
 </script>
 </body></html>
