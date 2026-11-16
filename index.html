@@ -6,7 +6,7 @@
 <style>
 [hidden] { display: none !important; }
 :root {
-  --bg: #e8efe9; --surface: #ffffff; --ink: #1d1a17; --muted: #5f6a62; --line: #d4ded6;
+  --bg: #efe7f0; --surface: #ffffff; --ink: #1f1a21; --muted: #6a5f6c; --line: #ddd1df;
   --accent: #b4532a; --accent-ink: #ffffff;
   --shift: #4f46e5; --free: #0d8a7d;
   --ok: #1e7a3c; --warn: #a15c00; --danger: #b3261e;
@@ -16,13 +16,13 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #14120f; --surface: #1f1c18; --ink: #efe9e2; --muted: #a59c91; --line: #34302a;
+    --bg: #17131a; --surface: #221c25; --ink: #f0e9f1; --muted: #a99dab; --line: #3a3140;
     --accent: #f08a5d; --accent-ink: #2a1206; --shift: #8f88ff; --free: #3fd0bf;
     --ok: #5fd38a; --warn: #ffb74d; --danger: #ff8a80; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #14120f; --surface: #1f1c18; --ink: #efe9e2; --muted: #a59c91; --line: #34302a;
+  --bg: #17131a; --surface: #221c25; --ink: #f0e9f1; --muted: #a99dab; --line: #3a3140;
   --accent: #f08a5d; --accent-ink: #2a1206; --shift: #8f88ff; --free: #3fd0bf;
   --ok: #5fd38a; --warn: #ffb74d; --danger: #ff8a80; color-scheme: dark;
 }
@@ -406,7 +406,8 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     <div class="campo"><label for="aaVri">Freelance VRI (USD/h)</label><input id="aaVri" type="number" min="0" step="0.01" inputmode="decimal"></div>
     <div class="campo"><label for="aaPct">Comisión de envío (%)</label><input id="aaPct" type="number" min="0" step="0.01" inputmode="decimal"></div>
     <div class="campo"><label for="aaFijo">Comisión fija (USD)</label><input id="aaFijo" type="number" min="0" step="0.01" inputmode="decimal"></div>
-    <div class="campo ancho"><label for="aaMeta">Meta por defecto de cada ciclo (USD)</label><input id="aaMeta" type="number" min="0" step="1" inputmode="decimal"></div>
+    <div class="campo"><label for="aaMeta">Meta por ciclo (USD)</label><input id="aaMeta" type="number" min="0" step="1" inputmode="decimal"></div>
+    <div class="campo"><label for="aaAjuste">Ajuste TC al paralelo (S/)</label><input id="aaAjuste" type="number" min="0" step="0.001" inputmode="decimal"></div>
     <p class="hint ancho">Las tarifas nuevas se aplican desde el próximo registro; lo ya trabajado conserva su tarifa.</p>
     <p class="hint ancho" id="aaTc"></p>
     <div class="botones ancho"><button type="button" class="btn" data-cerrar>Cancelar</button><button type="submit" class="btn primary">Guardar</button></div>
@@ -480,12 +481,13 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     escribir: function (d) { try { localStorage.setItem(KEY, JSON.stringify(d)); return true; } catch (e) { return false; } }
   };
   function vacio() {
-    return { registros: [], ciclos: {}, plan: {}, ajustes: { tarifaShift: 0, tarifaOpi: 0, tarifaVri: 0, comPct: 0, comFijo: 0, meta: 0, tasa: 3.4, tasaManual: false, tasaFecha: '' } };
+    return { registros: [], ciclos: {}, plan: {}, ajustes: { tarifaShift: 0, tarifaOpi: 0, tarifaVri: 0, comPct: 0, comFijo: 0, meta: 0, tasa: 3.4, tasaManual: false, tasaFecha: '', ajusteTc: 0.01 } };
   }
   var D, A;
   // plan: { 'AAAA-MM-DD': [9, 10, 14] } = shifts planeados a esas horas en punto
   function usar(d) {
     D = d || vacio(); D.plan = D.plan || {}; A = D.ajustes;
+    if (A.ajusteTc == null) { A.ajusteTc = 0.01; A.tasaFecha = ''; } // nuevo: TC = SUNAT compra + ajuste; se vuelve a traer hoy
     if (A.tarifaOpi == null) { A.tarifaOpi = A.tarifaVri = A.tarifaFree || 0; delete A.tarifaFree; } // antes había una sola tarifa freelance
     D.registros.forEach(function (r) { if (r.tipo === 'shift' && r.fin == null && r.bloque == null) r.bloque = inicioHora(r.inicio); }); // shift en curso de antes de los bloques
   }
@@ -540,7 +542,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     document.querySelectorAll('.tab').forEach(function (b) { b.setAttribute('aria-current', b.dataset.ir === ui.vista ? 'page' : 'false'); });
     document.querySelectorAll('.vista').forEach(function (v) { v.hidden = v.dataset.vista !== ui.vista; });
     if (document.activeElement !== $('tc')) $('tc').value = A.tasa;
-    $('tcLabel').title = A.tasaManual ? 'Tipo de cambio editado por ti. ↻ trae el del día.' : 'Tipo de cambio de mercado del ' + fechaCorta(A.tasaFecha) + ' (referencial).';
+    $('tcLabel').title = 'Tipo de cambio: ' + descTasa();
     renderActivo(); renderResumen(); renderTrabajo(); renderSemana(); renderHistorial(); renderAnio();
   }
 
@@ -937,29 +939,49 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   $('btnAjustes').addEventListener('click', function () {
     $('aaShift').value = A.tarifaShift || ''; $('aaOpi').value = A.tarifaOpi || ''; $('aaVri').value = A.tarifaVri || '';
     $('aaPct').value = A.comPct || ''; $('aaFijo').value = A.comFijo || ''; $('aaMeta').value = A.meta || '';
-    $('aaTc').textContent = 'Tipo de cambio: ' + A.tasa + (A.tasaManual ? ' (editado por ti).' : ' (mercado, ' + fechaCorta(A.tasaFecha) + ').') + ' Se edita arriba, junto a “TC”.';
+    $('aaAjuste').value = A.ajusteTc;
+    $('aaTc').textContent = 'Tipo de cambio hoy: ' + A.tasa + '. ' + descTasa() + ' También se edita arriba, junto a “TC”.';
     abrir($('popAjustes'));
   });
   $('fAjustes').addEventListener('submit', function (ev) {
     ev.preventDefault();
-    var v = { tarifaShift: num($('aaShift').value) || 0, tarifaOpi: num($('aaOpi').value) || 0, tarifaVri: num($('aaVri').value) || 0, comPct: num($('aaPct').value) || 0, comFijo: num($('aaFijo').value) || 0, meta: num($('aaMeta').value) || 0 };
+    var v = { tarifaShift: num($('aaShift').value) || 0, tarifaOpi: num($('aaOpi').value) || 0, tarifaVri: num($('aaVri').value) || 0, comPct: num($('aaPct').value) || 0, comFijo: num($('aaFijo').value) || 0, meta: num($('aaMeta').value) || 0, ajusteTc: num($('aaAjuste').value) || 0 };
     cerrar();
-    cambiar('Ajustes guardados.', function () { Object.assign(A, v); });
+    cambiar('Ajustes guardados.', function () {
+      Object.assign(A, v);
+      if (!A.tasaManual && A.tasaFuente === 'sunat') A.tasa = r4(A.tasaBase + A.ajusteTc); // el nuevo ajuste se aplica al TC de hoy
+    });
   });
   $('tc').addEventListener('change', function () {
     var v = num(this.value);
     if (!v) { this.value = A.tasa; return; }
     cambiar('Tipo de cambio: ' + v + '.', function () { A.tasa = v; A.tasaManual = true; });
   });
-  // Tipo de cambio de mercado del día (referencial). Si lo editaste, se respeta hasta que pulses ↻.
+  // Tipo de cambio automático: SUNAT compra (dolar.pe) + un ajuste editable hacia el paralelo.
+  // Si dolar.pe no responde, usa el de mercado sin ajuste. Si lo editaste a mano, se respeta hasta que pulses ↻.
+  function r4(n) { return Math.round(n * 10000) / 10000; }
   function traerTasa(forzar) {
     if (!forzar && (A.tasaManual || A.tasaFecha === ymd(new Date()))) return;
-    fetch('https://open.er-api.com/v6/latest/USD', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
-      var v = j && j.rates && j.rates.PEN;
-      if (!v) throw new Error('sin tasa');
-      v = Math.round(v * 10000) / 10000;
-      cambiar(forzar ? 'Tipo de cambio del día: ' + v + '.' : '', function () { A.tasa = v; A.tasaManual = false; A.tasaFecha = ymd(new Date()); });
+    function json(url) { return fetch(url, { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }); }
+    function fijar(base, fuente) {
+      var v = r4(fuente === 'sunat' ? base + A.ajusteTc : base);
+      cambiar(forzar ? 'Tipo de cambio del día: ' + v + '.' : '', function () { A.tasa = v; A.tasaBase = base; A.tasaFuente = fuente; A.tasaManual = false; A.tasaFecha = ymd(new Date()); });
+    }
+    json('https://dolar.pe/api/public/series?pair=USD-PEN').then(function (j) {
+      var d = j.series['USD-PEN'].data, base = d[d.length - 1];
+      if (!(base > 0)) throw new Error('sin tasa');
+      fijar(r4(base), 'sunat');
+    }).catch(function () {
+      return json('https://open.er-api.com/v6/latest/USD').then(function (j) {
+        if (!(j.rates && j.rates.PEN > 0)) throw new Error('sin tasa');
+        fijar(r4(j.rates.PEN), 'mercado');
+      });
     }).catch(function () { if (forzar) avisar('No se pudo traer el tipo de cambio. Revisa tu conexión.'); });
+  }
+  function descTasa() {
+    if (A.tasaManual) return 'Editado por ti. ↻ trae el del día.';
+    if (A.tasaFuente === 'sunat') return 'SUNAT compra ' + A.tasaBase + ' + ' + A.ajusteTc + ' de ajuste al paralelo (' + fechaCorta(A.tasaFecha) + ').';
+    return 'De mercado (' + fechaCorta(A.tasaFecha) + ').';
   }
   $('tcAuto').addEventListener('click', function () { traerTasa(true); });
 
