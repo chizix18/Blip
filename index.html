@@ -8,7 +8,7 @@
 :root {
   --bg: #efe7f0; --surface: #ffffff; --ink: #1f1a21; --muted: #6a5f6c; --line: #ddd1df;
   --accent: #b4532a; --accent-ink: #ffffff;
-  --shift: #4f46e5; --free: #0d8a7d;
+  --shift: #9b7fe0; --free: #8cc63f;
   --ok: #1e7a3c; --warn: #a15c00; --danger: #b3261e;
   --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
@@ -17,13 +17,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #17131a; --surface: #221c25; --ink: #f0e9f1; --muted: #a99dab; --line: #3a3140;
-    --accent: #f08a5d; --accent-ink: #2a1206; --shift: #8f88ff; --free: #3fd0bf;
+    --accent: #f08a5d; --accent-ink: #2a1206; --shift: #b9a3ff; --free: #b6e36b;
     --ok: #5fd38a; --warn: #ffb74d; --danger: #ff8a80; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #17131a; --surface: #221c25; --ink: #f0e9f1; --muted: #a99dab; --line: #3a3140;
-  --accent: #f08a5d; --accent-ink: #2a1206; --shift: #8f88ff; --free: #3fd0bf;
+  --accent: #f08a5d; --accent-ink: #2a1206; --shift: #b9a3ff; --free: #b6e36b;
   --ok: #5fd38a; --warn: #ffb74d; --danger: #ff8a80; color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -113,6 +113,7 @@ body::before { left: 0; } body::after { right: 0; transform: scaleY(-1); }
 .filas .reg small { font-size: 12px; }
 .filas .d > b, .filas .d > small { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .filas .der { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+.monto { font-weight: 600; font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; } /* montos de cada registro: letra de texto */
 .estado { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; color: var(--c); }
 .estado::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
 .e-cobrado { --c: var(--ok); } .e-pendiente { --c: var(--warn); } .e-atrasado { --c: var(--danger); } .e-curso { --c: var(--accent); } .e-vacio, .e-futuro { --c: var(--muted); }
@@ -624,7 +625,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   }
 
   function filaReg(r, conAcciones) {
-    var der = h('div', { class: 'der' }, h('span', { class: 'num', text: usd(monto(r)) }));
+    var der = h('div', { class: 'der' }, h('span', { class: 'monto', text: usd(monto(r)) }));
     var acciones = conAcciones && r.fin != null ? h('div', { class: 'der acciones' },
       h('button', { class: 'chip', type: 'button', text: 'Editar', onclick: function () { abrirReg(r); } }),
       h('button', { class: 'chip borrar', type: 'button', text: 'Borrar', onclick: function (ev) { borrarReg(r, ev.currentTarget); } })) : null;
