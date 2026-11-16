@@ -133,7 +133,7 @@ body::before { left: 0; } body::after { right: 0; transform: scaleY(-1); }
 .borrar[data-armado] { color: var(--danger); border-color: var(--danger); }
 
 /* Trabajo */
-.arranque { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.arranque { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .go { border: 1px solid color-mix(in srgb, var(--c) 40%, var(--line)); background: color-mix(in srgb, var(--c) 10%, var(--surface)); border-radius: 14px; padding: 22px 18px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; text-align: left; position: relative; overflow: hidden; min-width: 0; }
 .go::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--c); }
 .go:hover:not(:disabled) { border-color: var(--c); }
@@ -251,6 +251,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   .go .play { margin: 0; }
 }
 @media (max-width: 360px) {
+  .filas .reg .largo { display: none; }
   .tc input { width: 52px; }
   .tc { padding-left: 8px; }
   .tc button { min-width: 22px; }
@@ -322,7 +323,8 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   <main class="vista" data-vista="trabajo" hidden>
     <div class="arranque">
       <button class="go t-shift" type="button" data-iniciar="shift"><span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg></span><span><b>Shift</b><small id="goShift"></small></span></button>
-      <button class="go t-free" type="button" data-iniciar="freelance"><span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg></span><span><b>Freelance</b><small id="goFree"></small></span></button>
+      <button class="go t-free" type="button" data-iniciar="opi"><span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg></span><span><b>Freelance OPI</b><small id="goOpi"></small></span></button>
+      <button class="go t-free" type="button" data-iniciar="vri"><span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg></span><span><b>Freelance VRI</b><small id="goVri"></small></span></button>
     </div>
     <section class="panel">
       <div class="panel-head"><h2>Trabajado hoy</h2><button class="btn" type="button" data-nuevo>+ Manual</button></div>
@@ -402,7 +404,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
 <div class="pop" id="popReg" role="dialog" aria-labelledby="prTitulo" hidden>
   <div class="pop-head"><h2 id="prTitulo">Registro</h2><button class="pop-cerrar" type="button" aria-label="Cerrar">×</button></div>
   <form id="fReg" novalidate>
-    <div class="campo ancho"><label>Tipo</label><div class="tipo-sel"><button class="chip" type="button" data-tipo="shift">Shift</button><button class="chip" type="button" data-tipo="freelance">Freelance</button></div></div>
+    <div class="campo ancho"><label>Tipo</label><div class="tipo-sel"><button class="chip" type="button" data-tipo="shift">Shift</button><button class="chip" type="button" data-tipo="opi">Freelance OPI</button><button class="chip" type="button" data-tipo="vri">Freelance VRI</button></div></div>
     <div class="campo ancho"><label for="frFecha">Fecha</label><input id="frFecha" type="date"></div>
     <div class="campo"><label for="frMin">Minutos</label><input id="frMin" type="number" min="0" step="1" inputmode="numeric"></div>
     <div class="campo" id="frSegCampo"><label for="frSeg">Segundos</label><input id="frSeg" type="number" min="0" max="59" step="1" inputmode="numeric"></div>
@@ -416,7 +418,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   <div class="pop-head"><h2 id="psTitulo">Pasaste 1 hora</h2><button class="pop-cerrar" type="button" aria-label="Cerrar">×</button></div>
   <form id="fSobra" novalidate>
     <p class="hint ancho sub" id="psTexto"></p>
-    <div class="campo ancho"><label>Guardar el sobrante como</label><div class="tipo-sel"><button class="chip" type="button" data-sobra="shift">Nuevo shift</button><button class="chip" type="button" data-sobra="freelance">Freelance</button></div></div>
+    <div class="campo ancho"><label>Guardar el sobrante como</label><div class="tipo-sel"><button class="chip" type="button" data-sobra="shift">Nuevo shift</button><button class="chip" type="button" data-sobra="opi">Freelance OPI</button><button class="chip" type="button" data-sobra="vri">Freelance VRI</button></div></div>
     <p class="hint ancho sub" id="psValor"></p>
     <p class="hint ancho">Si cancelas, el cronómetro sigue corriendo.</p>
     <div class="botones ancho"><button type="button" class="btn" data-cerrar>Cancelar</button><button type="submit" class="btn primary">Guardar</button></div>
@@ -438,8 +440,9 @@ tfoot td { font-weight: 700; border-bottom: 0; }
 <div class="pop" id="popAjustes" role="dialog" aria-labelledby="paTitulo" hidden>
   <div class="pop-head"><h2 id="paTitulo">Ajustes</h2><button class="pop-cerrar" type="button" aria-label="Cerrar">×</button></div>
   <form id="fAjustes" novalidate>
-    <div class="campo"><label for="aaShift">Tarifa Shift (USD/h)</label><input id="aaShift" type="number" min="0" step="0.01" inputmode="decimal"></div>
-    <div class="campo"><label for="aaFree">Tarifa Freelance (USD/h)</label><input id="aaFree" type="number" min="0" step="0.01" inputmode="decimal"></div>
+    <div class="campo ancho"><label for="aaShift">Tarifa Shift (USD/h)</label><input id="aaShift" type="number" min="0" step="0.01" inputmode="decimal"></div>
+    <div class="campo"><label for="aaOpi">Freelance OPI (USD/h)</label><input id="aaOpi" type="number" min="0" step="0.01" inputmode="decimal"></div>
+    <div class="campo"><label for="aaVri">Freelance VRI (USD/h)</label><input id="aaVri" type="number" min="0" step="0.01" inputmode="decimal"></div>
     <div class="campo"><label for="aaPct">Comisión de envío (%)</label><input id="aaPct" type="number" min="0" step="0.01" inputmode="decimal"></div>
     <div class="campo"><label for="aaFijo">Comisión fija (USD)</label><input id="aaFijo" type="number" min="0" step="0.01" inputmode="decimal"></div>
     <div class="campo ancho"><label for="aaMeta">Meta por defecto de cada ciclo (USD)</label><input id="aaMeta" type="number" min="0" step="1" inputmode="decimal"></div>
@@ -467,7 +470,10 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   };
   var MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
   var DIAS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-  var NOMBRE = { shift: 'Shift', freelance: 'Freelance' };
+  var NOMBRE = { shift: 'Shift', freelance: 'Freelance', opi: 'Freelance OPI', vri: 'Freelance VRI' };
+  function nombreReg(r) { return r.tipo === 'shift' ? 'Shift' : 'Freelance' + (r.modo ? ' ' + r.modo.toUpperCase() : ''); }
+  function claseDe(r) { return r.tipo === 'shift' ? 'shift' : r.modo || 'vri'; }
+  function tarifaDe(clase) { return clase === 'shift' ? A.tarifaShift : clase === 'opi' ? A.tarifaOpi : A.tarifaVri; }
 
   // ---------- Utilidades ----------
   function pad(n) { return (n < 10 ? '0' : '') + n; }
@@ -513,11 +519,14 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     escribir: function (d) { try { localStorage.setItem(KEY, JSON.stringify(d)); return true; } catch (e) { return false; } }
   };
   function vacio() {
-    return { registros: [], ciclos: {}, plan: {}, ajustes: { tarifaShift: 0, tarifaFree: 0, comPct: 0, comFijo: 0, meta: 0, tasa: 3.4, tasaManual: false, tasaFecha: '' } };
+    return { registros: [], ciclos: {}, plan: {}, ajustes: { tarifaShift: 0, tarifaOpi: 0, tarifaVri: 0, comPct: 0, comFijo: 0, meta: 0, tasa: 3.4, tasaManual: false, tasaFecha: '' } };
   }
   var D, A;
   // plan: { 'AAAA-MM-DD': [9, 10, 14] } = shifts planeados a esas horas en punto
-  function usar(d) { D = d || vacio(); D.plan = D.plan || {}; A = D.ajustes; }
+  function usar(d) {
+    D = d || vacio(); D.plan = D.plan || {}; A = D.ajustes;
+    if (A.tarifaOpi == null) { A.tarifaOpi = A.tarifaVri = A.tarifaFree || 0; delete A.tarifaFree; } // antes había una sola tarifa freelance
+  }
   usar(store.leer());
   function guardar() { if (!store.escribir(D)) avisar('No se pudieron guardar tus datos en este navegador.'); }
   // Toda acción que cambia datos pasa por aquí: guarda, redibuja y ofrece Deshacer
@@ -590,7 +599,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     return n;
   }
   function renderSemana() {
-    var ini = ui.semana, fin = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate() + 6), hoy = ymd(new Date()), ahora = new Date();
+    var ini = ui.semana, fin = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate() + 6), hoy = ymd(new Date());
     $('sTitulo').textContent = ini.getDate() + ' ' + MESES[ini.getMonth()].slice(0, 3) + ' – ' + fin.getDate() + ' ' + MESES[fin.getMonth()].slice(0, 3);
     var ul = $('sDias'), plan = 0, cumplidos = 0, real = 0, planUsd = 0;
     ul.replaceChildren();
@@ -601,20 +610,20 @@ tfoot td { font-weight: 700; border-bottom: 0; }
       horas.forEach(function (hr) {
         var e = estadoSlot(f, hr), chip = h('span', { class: 'slot s-' + e }, pad(hr) + ':00');
         plan++; if (e === 'ok') cumplidos++;
-        if (e === 'futuro') chip.appendChild(h('button', { type: 'button', 'aria-label': 'Quitar shift de las ' + hr + ':00', text: '×', onclick: quitarSlot.bind(null, f, hr) }));
+        chip.appendChild(h('button', { type: 'button', 'aria-label': 'Quitar shift de las ' + hr + ':00', text: '×', onclick: quitarSlot.bind(null, f, hr) }));
         pl.appendChild(chip);
       });
-      if (f >= hoy) {
+      {
         var sel = h('select', { class: 'agregar', 'aria-label': 'Planear shift el ' + f, onchange: function (ev) { agregarSlot(ev.target.dataset.f, +ev.target.value); } });
         sel.dataset.f = f;
         sel.appendChild(h('option', { value: '', text: '+ Shift' }));
-        for (var hr = f === hoy ? ahora.getHours() : 0; hr < 24; hr++) if (horas.indexOf(hr) < 0) sel.appendChild(h('option', { value: hr, text: pad(hr) + ':00' }));
+        for (var hr = 0; hr < 24; hr++) if (horas.indexOf(hr) < 0) sel.appendChild(h('option', { value: hr, text: pad(hr) + ':00' }));
         pl.appendChild(sel);
       }
       regs.forEach(function (r) {
         var t = new Date(r.inicio), txt = r.fin == null ? 'ahora' : duracion(r);
         real += monto(r);
-        re.appendChild(h('span', { class: 'slot ' + (r.tipo === 'shift' ? '' : 't-free'), title: NOMBRE[r.tipo] }, (r.manual ? '' : pad(t.getHours()) + ':' + pad(t.getMinutes()) + ' · ') + txt));
+        re.appendChild(h('span', { class: 'slot ' + (r.tipo === 'shift' ? '' : 't-free'), title: nombreReg(r) }, r.tipo === 'shift' ? (r.manual ? '' : pad(t.getHours()) + ':' + pad(t.getMinutes()) + ' · ') + txt : (r.modo ? r.modo.toUpperCase() + ' · ' : '') + txt));
       });
       // Dinero del día: lo planeado (shifts × tarifa) frente a lo real
       var plDia = horas.length * A.tarifaShift, reDia = regs.reduce(function (s, r) { return s + monto(r); }, 0);
@@ -658,7 +667,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     return h('li', null,
       h('div', { class: 'd t-' + (r.tipo === 'shift' ? 'shift' : 'free') }, h('span', { class: 'dot' }),
         h('span', { class: 'reg' },
-          h('span', null, NOMBRE[r.tipo] + ' · ', r.fin == null ? h('b', { text: 'en curso' }) : h('b', { class: 'num', text: duracion(r) })),
+          h('span', null, r.tipo === 'shift' ? 'Shift' : r.modo ? h('span', null, h('span', { class: 'largo', text: 'Freelance ' }), r.modo.toUpperCase()) : 'Freelance', ' · ', r.fin == null ? h('b', { text: 'en curso' }) : h('b', { class: 'num', text: duracion(r) })),
           h('small', { text: DIAS[d.getDay()] + ' ' + d.getDate() + (r.manual ? ' · manual' : ', ' + pad(inicio.getHours()) + ':' + pad(inicio.getMinutes())) }))),
       der, acciones);
   }
@@ -688,7 +697,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     $('rBarra').style.width = (c.meta > 0 ? Math.min(100, c.calc / c.meta * 100) : 0) + '%';
     if (document.activeElement !== $('rMeta')) $('rMeta').value = c.meta || '';
     var frase = $('rFrase');
-    if (!A.tarifaShift && !A.tarifaFree) { frase.className = 'frase warn'; frase.textContent = 'Configura tus tarifas en Ajustes (⚙).'; }
+    if (!A.tarifaShift && !A.tarifaOpi && !A.tarifaVri) { frase.className = 'frase warn'; frase.textContent = 'Configura tus tarifas en Ajustes (⚙).'; }
     else if (!(c.meta > 0)) { frase.className = 'frase'; frase.textContent = 'Define una meta para ver tu avance.'; }
     else if (c.calc >= c.meta) { frase.className = 'frase ok'; frase.textContent = '¡Meta cumplida! +' + usd(c.calc - c.meta); }
     else {
@@ -725,7 +734,8 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   function renderTrabajo() {
     var ac = activo();
     $('goShift').textContent = usd(A.tarifaShift) + '/h · por segundo';
-    $('goFree').textContent = usd(A.tarifaFree) + '/h · por minuto';
+    $('goOpi').textContent = usd(A.tarifaOpi) + '/h · por minuto';
+    $('goVri').textContent = usd(A.tarifaVri) + '/h · por minuto';
     document.querySelectorAll('[data-iniciar]').forEach(function (b) { b.disabled = !!ac; });
     lista($('tHoy'), D.registros.filter(function (r) { return r.fecha === ymd(new Date()); }), true, 'Pulsa Shift o Freelance cuando empieces.');
   }
@@ -737,7 +747,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     var esShift = r.tipo === 'shift', s = segCorridos(r, Date.now()), p = pausado(r);
     box.style.setProperty('--c', esShift ? 'var(--shift)' : 'var(--free)');
     box.classList.toggle('pausado', p);
-    $('acTitulo').textContent = NOMBRE[r.tipo] + (p ? ' · en pausa' : ' en curso') + ' · ' + usd(monto(r));
+    $('acTitulo').textContent = nombreReg(r) + (p ? ' · en pausa' : ' en curso') + ' · ' + usd(monto(r));
     $('acReloj').textContent = reloj(s);
     var nota = $('acNota');
     if (esShift && s >= SHIFT_SEG) { nota.className = 'alerta'; nota.textContent = 'Pasaste 1 hora · sobrante +' + reloj(s - SHIFT_SEG); }
@@ -783,13 +793,14 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   }
 
   // ---------- Cronómetro ----------
-  function iniciar(tipo) {
+  // clase: 'shift', 'opi' o 'vri' (freelance por teléfono o por video)
+  function iniciar(clase) {
     if (activo()) return;
-    var tarifa = tipo === 'shift' ? A.tarifaShift : A.tarifaFree;
-    cambiar(NOMBRE[tipo] + ' iniciado.', function () {
-      D.registros.push({ id: 'r' + Date.now(), tipo: tipo, fecha: ymd(new Date()), inicio: Date.now(), pausas: [], fin: null, seg: null, tarifa: tarifa });
+    var tarifa = tarifaDe(clase), tipo = clase === 'shift' ? 'shift' : 'freelance';
+    cambiar(NOMBRE[clase] + ' iniciado.', function () {
+      D.registros.push({ id: 'r' + Date.now(), tipo: tipo, modo: tipo === 'freelance' ? clase : undefined, fecha: ymd(new Date()), inicio: Date.now(), pausas: [], fin: null, seg: null, tarifa: tarifa });
     });
-    if (!tarifa) avisar('Ojo: la tarifa de ' + NOMBRE[tipo] + ' está en $0. Puedes cambiarla en Ajustes.');
+    if (!tarifa) avisar('Ojo: la tarifa de ' + NOMBRE[clase] + ' está en $0. Puedes cambiarla en Ajustes.');
   }
   function alternarPausa() {
     var r = activo(); if (!r) return;
@@ -807,15 +818,15 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   // Cierra el registro activo. Si es un shift de más de 1 h, guarda 1 h y el sobrante como nuevo(s) shift(s) o como freelance.
   function guardarFin(r, ahora, s, tipoSobra) {
     var sobra = Math.floor(s) - SHIFT_SEG;
-    var txt = tipoSobra ? 'Shift de 1 h + sobrante de ' + reloj(sobra) + (tipoSobra === 'shift' ? ' como nuevo shift.' : ' como freelance.')
-      : NOMBRE[r.tipo] + ' guardado: ' + (r.tipo === 'shift' ? reloj(s) : Math.floor(s / 60) + ' min') + '.';
+    var txt = tipoSobra ? 'Shift de 1 h + sobrante de ' + reloj(sobra) + (tipoSobra === 'shift' ? ' como nuevo shift.' : ' como ' + NOMBRE[tipoSobra] + '.')
+      : nombreReg(r) + ' guardado: ' + (r.tipo === 'shift' ? reloj(s) : Math.floor(s / 60) + ' min') + '.';
     cambiar(txt, function () {
       if (pausado(r)) r.pausas[r.pausas.length - 1].h = ahora;
       r.fin = ahora;
       r.seg = tipoSobra ? SHIFT_SEG : Math.floor(s);
       if (!tipoSobra) return;
       var ini = ahora - sobra * 1000, resto = sobra;
-      if (tipoSobra === 'freelance') resto = 0, D.registros.push({ id: 'r' + ahora + 'f', tipo: 'freelance', fecha: ymd(new Date(ini)), inicio: ini, pausas: [], fin: ahora, seg: sobra, tarifa: A.tarifaFree });
+      if (tipoSobra !== 'shift') resto = 0, D.registros.push({ id: 'r' + ahora + 'f', tipo: 'freelance', modo: tipoSobra, fecha: ymd(new Date(ini)), inicio: ini, pausas: [], fin: ahora, seg: sobra, tarifa: tarifaDe(tipoSobra) });
       for (var n = 0; resto > 0; n++) { // un shift dura 1 h: si el sobrante pasa de 1 h, se reparte en varios
         var seg = Math.min(resto, SHIFT_SEG);
         D.registros.push({ id: 'r' + ahora + 's' + n, tipo: 'shift', fecha: ymd(new Date(ini)), inicio: ini, pausas: [], fin: ini + seg * 1000, seg: seg, tarifa: A.tarifaShift });
@@ -828,8 +839,8 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     tipoSobra = t;
     document.querySelectorAll('[data-sobra]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.sobra === t); });
     var sobra = Math.floor(sobraPend.s) - SHIFT_SEG;
-    $('psValor').replaceChildren(t === 'shift' ? 'Se pagan ' + reloj(sobra) + ' a tarifa Shift: ' : 'Se pagan ' + Math.floor(sobra / 60) + ' min a tarifa Freelance: ',
-      h('b', { text: usd(t === 'shift' ? sobra / 3600 * A.tarifaShift : Math.floor(sobra / 60) / 60 * A.tarifaFree) }));
+    $('psValor').replaceChildren(t === 'shift' ? 'Se pagan ' + reloj(sobra) + ' a tarifa Shift: ' : 'Se pagan ' + Math.floor(sobra / 60) + ' min a tarifa ' + t.toUpperCase() + ': ',
+      h('b', { text: usd(t === 'shift' ? sobra / 3600 * A.tarifaShift : Math.floor(sobra / 60) / 60 * tarifaDe(t)) }));
   }
   function abrirSobra(ahora, s) {
     sobraPend = { ahora: ahora, s: s };
@@ -857,7 +868,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   function abrirReg(r) {
     editando = r || null;
     $('prTitulo').textContent = r ? 'Editar registro' : 'Registro manual';
-    ponerTipo(r ? r.tipo : 'shift');
+    ponerTipo(r ? claseDe(r) : 'shift');
     $('frFecha').value = r ? r.fecha : ymd(new Date());
     $('frMin').value = r ? Math.floor(r.seg / 60) : '';
     $('frSeg').value = r ? Math.floor(r.seg % 60) : '';
@@ -878,13 +889,14 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     var r = editando;
     cerrar();
     cambiar(r ? 'Registro actualizado.' : 'Registro agregado.', function () {
+      var tipo = tipoForm === 'shift' ? 'shift' : 'freelance', modo = tipo === 'freelance' ? tipoForm : undefined;
       if (r) {
-        if (r.tipo !== tipoForm) r.tarifa = tipoForm === 'shift' ? A.tarifaShift : A.tarifaFree;
-        r.tipo = tipoForm; r.seg = seg;
+        if (claseDe(r) !== tipoForm) r.tarifa = tarifaDe(tipoForm); // solo si cambia el tipo se toma la tarifa actual
+        r.tipo = tipo; r.modo = modo; r.seg = seg;
         if (r.fecha !== f) { r.fecha = f; r.inicio = deYmd(f).getTime() + 12 * 3600e3; r.manual = true; }
       } else {
-        D.registros.push({ id: 'r' + Date.now(), tipo: tipoForm, fecha: f, inicio: deYmd(f).getTime() + 12 * 3600e3, pausas: [], fin: deYmd(f).getTime() + 12 * 3600e3, seg: seg, manual: true,
-          tarifa: tipoForm === 'shift' ? A.tarifaShift : A.tarifaFree });
+        D.registros.push({ id: 'r' + Date.now(), tipo: tipo, modo: modo, fecha: f, inicio: deYmd(f).getTime() + 12 * 3600e3, pausas: [], fin: deYmd(f).getTime() + 12 * 3600e3, seg: seg, manual: true,
+          tarifa: tarifaDe(tipoForm) });
       }
     });
   });
@@ -934,14 +946,14 @@ tfoot td { font-weight: 700; border-bottom: 0; }
 
   // ---------- Ajustes ----------
   $('btnAjustes').addEventListener('click', function () {
-    $('aaShift').value = A.tarifaShift || ''; $('aaFree').value = A.tarifaFree || '';
+    $('aaShift').value = A.tarifaShift || ''; $('aaOpi').value = A.tarifaOpi || ''; $('aaVri').value = A.tarifaVri || '';
     $('aaPct').value = A.comPct || ''; $('aaFijo').value = A.comFijo || ''; $('aaMeta').value = A.meta || '';
     $('aaTc').textContent = 'Tipo de cambio: ' + A.tasa + (A.tasaManual ? ' (editado por ti).' : ' (mercado, ' + fechaCorta(A.tasaFecha) + ').') + ' Se edita arriba, junto a “TC”.';
     abrir($('popAjustes'));
   });
   $('fAjustes').addEventListener('submit', function (ev) {
     ev.preventDefault();
-    var v = { tarifaShift: num($('aaShift').value) || 0, tarifaFree: num($('aaFree').value) || 0, comPct: num($('aaPct').value) || 0, comFijo: num($('aaFijo').value) || 0, meta: num($('aaMeta').value) || 0 };
+    var v = { tarifaShift: num($('aaShift').value) || 0, tarifaOpi: num($('aaOpi').value) || 0, tarifaVri: num($('aaVri').value) || 0, comPct: num($('aaPct').value) || 0, comFijo: num($('aaFijo').value) || 0, meta: num($('aaMeta').value) || 0 };
     cerrar();
     cambiar('Ajustes guardados.', function () { Object.assign(A, v); });
   });
