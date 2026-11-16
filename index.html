@@ -40,17 +40,23 @@ h2 { font-size: 18px; font-weight: 700; }
 .sub b { color: var(--ink); font-weight: 600; }
 
 /* Gatito: en computadora fijo en la esquina; en celular al final de la página */
-.gato { width: 112px; align-self: flex-end; margin-top: -8px; pointer-events: none; }
-.gato .lente { fill: color-mix(in srgb, #9fd3ff 18%, transparent); stroke: #2b2620; stroke-width: 1.6; }
-.gato .banda { fill: none; stroke: #2b2620; stroke-width: 3; stroke-linecap: round; }
-.gato .copa { fill: var(--accent); stroke: #2b2620; stroke-width: 1.2; }
-.gato .pelaje { fill: #ffffff; stroke: color-mix(in srgb, var(--ink) 55%, transparent); stroke-width: 1.6; stroke-linejoin: round; }
-.gato .trazo { fill: none; stroke: color-mix(in srgb, var(--ink) 55%, transparent); stroke-width: 1.4; stroke-linecap: round; }
-.gato .rosa { fill: color-mix(in srgb, var(--accent) 35%, #ffffff); }
-.gato .ojo { fill: #2b2620; }
-.gato .lap { fill: color-mix(in srgb, var(--ink) 82%, var(--bg)); }
-.gato .logo { fill: var(--accent); }
-@media (min-width: 1400px) { .gato { position: fixed; right: 26px; bottom: 18px; margin: 0; width: 136px; } }
+.gato { width: 130px; align-self: flex-end; margin-top: -8px; pointer-events: none; }
+.gato * { stroke: #1d1a17; stroke-width: 3.4; stroke-linejoin: round; stroke-linecap: round; }
+.gato .blanco, .gato .lente { fill: #ffffff; }
+.gato .rosa { fill: #f6a8a8; stroke: none; }
+.gato .rubor { fill: #f9c0c0; stroke: none; }
+.gato .ojo, .gato .huella { fill: #1d1a17; stroke: none; }
+.gato .huella * { stroke: none; fill: #ffffff; }
+.gato .brillo { fill: #ffffff; stroke: none; }
+.gato .linea, .gato .banda { fill: none; }
+.gato .banda { stroke-width: 5; }
+.gato .fina { stroke-width: 2.4; }
+.gato .copa { fill: var(--accent); }
+.gato .lap { fill: #dfe5ee; }
+.gato .teclado { fill: #c3ccd8; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .gato .linea:first-child { stroke: var(--muted); } }
+:root[data-theme="dark"] .gato .linea:first-child { stroke: var(--muted); }
+@media (min-width: 1400px) { .gato { position: fixed; right: 26px; bottom: 18px; margin: 0; width: 150px; } }
 button, input { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -115,6 +121,9 @@ body::before { left: 0; } body::after { right: 0; transform: scaleY(-1); }
 .filas .d { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .filas .d span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .filas .d small { color: var(--muted); }
+.filas .reg { display: flex; flex-direction: column; min-width: 0; }
+.filas .reg > * { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.filas .reg small { font-size: 12px; }
 .filas .d > b, .filas .d > small { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .filas .der { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
 .estado { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; color: var(--c); }
@@ -161,6 +170,13 @@ body::before { left: 0; } body::after { right: 0; transform: scaleY(-1); }
 .slot.t-free { --c: var(--free); }
 .agregar { height: 26px; border: 1px dashed var(--line); background: none; border-radius: 999px; padding: 0 8px; font-size: 12.5px; color: var(--muted); max-width: 100%; }
 .agregar:hover { border-color: var(--accent); color: var(--ink); }
+.col-dia { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.monto-dia { font-size: 13px; font-weight: 500; }
+.monto-dia.cero { color: var(--muted); font-weight: 400; }
+.c-ok, .sub b.c-ok { color: var(--ok); } .c-warn, .sub b.c-warn { color: var(--warn); }
+.cab-col { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 8px; border-top: 3px solid var(--c); background: color-mix(in srgb, var(--c) 9%, var(--surface)); min-width: 0; }
+.cab-col b { font-size: 17px; font-weight: 600; }
+.t-plan { --c: var(--shift); } .t-real { --c: var(--accent); }
 .leyenda { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
 .leyenda .slot { font-size: 11.5px; height: 22px; }
 
@@ -220,6 +236,8 @@ tfoot td { font-weight: 700; border-bottom: 0; }
 @media (max-width: 460px) {
   .panel { padding: 14px; }
   .filas .acciones { grid-column: 1 / -1; justify-self: end; }
+  .nav-per b { min-width: 0; font-size: 16px; }
+  .nav-per .btn { padding-inline: 10px; }
   .sem-fila { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
   .sem-cab > span:first-child { display: none; }
   .semana .dia { grid-column: 1 / -1; flex-direction: row; gap: 6px; align-items: baseline; }
@@ -319,7 +337,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
         <button class="chip" type="button" id="sHoy">Hoy</button>
       </div>
       <div><p class="hint sub" id="sResumen"></p><p class="hint sub" id="sGanado"></p><p class="hint sub" id="sProy"></p></div>
-      <div class="sem-fila sem-cab"><span></span><span class="eyebrow">Planeado</span><span class="eyebrow">Real</span></div>
+      <div class="sem-fila sem-cab"><span></span><span class="cab-col t-plan"><span class="eyebrow">Planeado</span><b class="num" id="sCabPlan"></b></span><span class="cab-col t-real"><span class="eyebrow">Real</span><b class="num" id="sCabReal"></b></span></div>
       <ul class="semana" id="sDias"></ul>
       <p class="leyenda"><span class="slot s-ok">Cumplido</span><span class="slot s-parcial">Parcial</span><span class="slot s-no">No hecho</span><span class="slot s-futuro">Por venir</span></p>
     </section>
@@ -329,7 +347,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     <section class="panel">
       <div class="panel-head">
         <div class="nav-per"><button class="btn" type="button" id="hAnt" aria-label="Mes anterior">‹</button><b id="hMes"></b><button class="btn" type="button" id="hSig" aria-label="Mes siguiente">›</button></div>
-        <button class="btn" type="button" data-nuevo>+ Registro</button>
+        <button class="btn" type="button" data-nuevo>+ Manual</button>
       </div>
       <div class="dos" id="hTipos"></div>
       <ul class="filas" id="hLista"></ul>
@@ -350,20 +368,32 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     </section>
   </main>
 
-  <svg class="gato" viewBox="0 0 120 92" aria-hidden="true">
-    <path class="pelaje" d="M38 30 L35 9 L52 21 Q60 18 68 21 L85 9 L82 30 Q88 40 84 52 L36 52 Q32 40 38 30 Z"/>
-    <path class="rosa" d="M39 15 L40 25 L47 21 Z M81 15 L80 25 L73 21 Z"/>
-    <ellipse class="ojo" cx="50" cy="36" rx="2.4" ry="3"/><ellipse class="ojo" cx="70" cy="36" rx="2.4" ry="3"/>
-    <path class="lente" d="M44 36 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0 M64 36 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0 M56 35 q4 -2 8 0"/>
-    <path class="rosa" d="M57.5 43 h5 l-2.5 3 z"/>
-    <path class="trazo" d="M60 46 q-3 4 -6 2 M60 46 q3 4 6 2 M43 44 h-9 M43 47 l-8 3 M77 44 h9 M77 47 l8 3"/>
-    <path class="banda" d="M34 36 C31 13, 89 13, 86 36"/>
-    <rect class="copa" x="29" y="30" width="8" height="13" rx="3"/><rect class="copa" x="83" y="30" width="8" height="13" rx="3"/>
-    <path class="banda" d="M33 42 q1 7 12 6" style="stroke-width:2"/><circle class="copa" cx="46" cy="48" r="2.2"/>
-    <rect class="lap" x="24" y="50" width="72" height="34" rx="4"/>
-    <circle class="logo" cx="60" cy="67" r="4"/>
-    <rect class="lap" x="14" y="84" width="92" height="5" rx="2.5"/>
-    <ellipse class="pelaje" cx="44" cy="51" rx="6" ry="4"/><ellipse class="pelaje" cx="76" cy="51" rx="6" ry="4"/>
+  <svg class="gato" viewBox="0 0 160 140" aria-hidden="true">
+    <path class="linea" d="M6 128 H154"/>
+    <!-- cuerpo -->
+    <path class="blanco" d="M62 90 C56 106 56 120 60 128 H120 C124 118 124 104 116 90 Z"/>
+    <!-- cabeza con orejas -->
+    <path class="blanco" d="M46 62 C44 40 46 22 54 10 C63 14 72 19 80 24 Q88 22 96 24 C104 19 113 14 122 10 C130 22 132 40 130 62 C130 86 112 98 88 98 C64 98 46 86 46 62 Z"/>
+    <path class="rosa" d="M57 19 L58 35 L71 27 Z M119 19 L118 35 L105 27 Z"/>
+    <!-- audífonos -->
+    <path class="banda" d="M42 60 C38 4 138 4 134 60"/>
+    <rect class="copa" x="34" y="52" width="13" height="22" rx="6"/><rect class="copa" x="129" y="52" width="13" height="22" rx="6"/>
+    <path class="banda" style="stroke-width:3" d="M40 74 C42 86 52 90 62 89"/><circle class="copa" cx="64" cy="89" r="3.5"/>
+    <!-- mejillas, lentes y ojos -->
+    <ellipse class="rubor" cx="59" cy="79" rx="6" ry="3.5"/><ellipse class="rubor" cx="117" cy="79" rx="6" ry="3.5"/>
+    <rect class="lente" x="52" y="44" width="31" height="28" rx="13"/><rect class="lente" x="93" y="44" width="31" height="28" rx="13"/>
+    <path class="linea" d="M83 54 Q88 50 93 54"/>
+    <circle class="ojo" cx="68" cy="58" r="8"/><circle class="ojo" cx="108" cy="58" r="8"/>
+    <circle class="brillo" cx="65" cy="55" r="2.6"/><circle class="brillo" cx="105" cy="55" r="2.6"/>
+    <path class="ojo" d="M85 68 h6 l-3 3.2 z"/>
+    <path class="linea fina" d="M88 71 q-2.5 3.5 -5.5 1.5 M88 71 q2.5 3.5 5.5 1.5 M45 70 h-13 M46 75 l-12 4 M131 70 h13 M130 75 l12 4"/>
+    <!-- laptop -->
+    <path class="lap" d="M14 82 L76 74 L82 124 L24 131 Z"/>
+    <g class="huella"><ellipse cx="48" cy="106" rx="6" ry="5"/><circle cx="40" cy="98" r="2.3"/><circle cx="47" cy="95" r="2.3"/><circle cx="54" cy="97" r="2.3"/></g>
+    <path class="teclado" d="M82 124 L98 127 L86 133 L30 135 L24 131 Z"/>
+    <!-- pata con pulgar arriba -->
+    <path class="blanco" d="M118 100 C118 94 122 92 126 94 C124 86 128 78 133 80 C137 82 136 90 134 96 C142 96 146 102 144 110 C142 120 134 124 126 122 C120 120 116 112 118 100 Z"/>
+    <path class="linea fina" d="M121 108 h9 M122 115 h8"/>
   </svg>
 </div>
 
@@ -378,6 +408,17 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     <div class="campo" id="frSegCampo"><label for="frSeg">Segundos</label><input id="frSeg" type="number" min="0" max="59" step="1" inputmode="numeric"></div>
     <p class="hint ancho" id="frNota"></p>
     <p class="msg ancho" id="frMsg" role="status"></p>
+    <div class="botones ancho"><button type="button" class="btn" data-cerrar>Cancelar</button><button type="submit" class="btn primary">Guardar</button></div>
+  </form>
+</div>
+
+<div class="pop" id="popSobra" role="dialog" aria-labelledby="psTitulo" hidden>
+  <div class="pop-head"><h2 id="psTitulo">Pasaste 1 hora</h2><button class="pop-cerrar" type="button" aria-label="Cerrar">×</button></div>
+  <form id="fSobra" novalidate>
+    <p class="hint ancho sub" id="psTexto"></p>
+    <div class="campo ancho"><label>Guardar el sobrante como</label><div class="tipo-sel"><button class="chip" type="button" data-sobra="shift">Nuevo shift</button><button class="chip" type="button" data-sobra="freelance">Freelance</button></div></div>
+    <p class="hint ancho sub" id="psValor"></p>
+    <p class="hint ancho">Si cancelas, el cronómetro sigue corriendo.</p>
     <div class="botones ancho"><button type="button" class="btn" data-cerrar>Cancelar</button><button type="submit" class="btn primary">Guardar</button></div>
   </form>
 </div>
@@ -551,7 +592,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   function renderSemana() {
     var ini = ui.semana, fin = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate() + 6), hoy = ymd(new Date()), ahora = new Date();
     $('sTitulo').textContent = ini.getDate() + ' ' + MESES[ini.getMonth()].slice(0, 3) + ' – ' + fin.getDate() + ' ' + MESES[fin.getMonth()].slice(0, 3);
-    var ul = $('sDias'), plan = 0, cumplidos = 0, real = 0;
+    var ul = $('sDias'), plan = 0, cumplidos = 0, real = 0, planUsd = 0;
     ul.replaceChildren();
     for (var i = 0; i < 7; i++) {
       var d = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate() + i), f = ymd(d), horas = (D.plan[f] || []).slice().sort(function (a, b) { return a - b; });
@@ -575,14 +616,27 @@ tfoot td { font-weight: 700; border-bottom: 0; }
         real += monto(r);
         re.appendChild(h('span', { class: 'slot ' + (r.tipo === 'shift' ? '' : 't-free'), title: NOMBRE[r.tipo] }, (r.manual ? '' : pad(t.getHours()) + ':' + pad(t.getMinutes()) + ' · ') + txt));
       });
-      if (!regs.length) re.appendChild(h('span', { class: 'hint', text: '—' }));
+      // Dinero del día: lo planeado (shifts × tarifa) frente a lo real
+      var plDia = horas.length * A.tarifaShift, reDia = regs.reduce(function (s, r) { return s + monto(r); }, 0);
+      planUsd += plDia;
       ul.appendChild(h('li', { class: 'sem-fila' + (f === hoy ? ' hoy' : '') },
-        h('div', { class: 'dia' }, h('b', { text: DIAS[d.getDay()] + ' ' + d.getDate() }), h('small', { text: f === hoy ? 'Hoy' : MESES[d.getMonth()].slice(0, 3) })), pl, re));
+        h('div', { class: 'dia' }, h('b', { text: DIAS[d.getDay()] + ' ' + d.getDate() }), h('small', { text: f === hoy ? 'Hoy' : MESES[d.getMonth()].slice(0, 3) })),
+        h('div', { class: 'col-dia' }, h('span', { class: 'monto-dia num' + (plDia ? '' : ' cero'), text: usd(plDia) }), pl),
+        h('div', { class: 'col-dia' }, h('span', { class: 'monto-dia num ' + comparar(plDia, reDia, f < hoy), text: usd(reDia) }), re)));
     }
+    $('sCabPlan').textContent = usd(planUsd);
+    $('sCabReal').className = 'num ' + comparar(planUsd, real, true);
+    $('sCabReal').textContent = usd(real);
     $('sResumen').replaceChildren('Plan: ', h('b', { text: plan + (plan === 1 ? ' shift' : ' shifts') }), ' · cumpliste ', h('b', { text: String(cumplidos) }));
-    $('sGanado').replaceChildren('Ganado esta semana: ', h('b', { text: usd(real) }));
+    var dif = real - planUsd;
+    $('sGanado').replaceChildren('Real vs. plan: ', h('b', { class: comparar(planUsd, real, true), text: (dif > 0 ? '+' : '') + usd(dif) }));
     var k = claveMes(new Date()), c = ciclo(k), pend = planPendiente(k);
     $('sProy').replaceChildren(pend ? 'Con tu plan, ' + MESES[+k.slice(5) - 1].slice(0, 3).toLowerCase() + ': ' : 'Sin shifts por venir este mes.', pend ? h('b', { text: usd(c.calc + pend * A.tarifaShift) }) : '', pend && c.meta > 0 ? ' de ' + usd(c.meta) : '');
+  }
+  // Verde si lo real alcanza lo planeado; ámbar si quedó debajo y ese tiempo ya pasó
+  function comparar(plan, real, cerrado) {
+    if (!plan) return '';
+    return real >= plan - 0.005 ? 'c-ok' : cerrado ? 'c-warn' : '';
   }
   function agregarSlot(f, hr) {
     if (!isFinite(hr)) return;
@@ -603,8 +657,9 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     var d = deYmd(r.fecha), inicio = new Date(r.inicio);
     return h('li', null,
       h('div', { class: 'd t-' + (r.tipo === 'shift' ? 'shift' : 'free') }, h('span', { class: 'dot' }),
-        h('span', null, NOMBRE[r.tipo] + ' · ', r.fin == null ? h('b', { text: 'en curso' }) : h('b', { class: 'num', text: duracion(r) }),
-          h('small', { text: ' · ' + DIAS[d.getDay()] + ' ' + d.getDate() + (r.manual ? '' : ', ' + pad(inicio.getHours()) + ':' + pad(inicio.getMinutes())) }))),
+        h('span', { class: 'reg' },
+          h('span', null, NOMBRE[r.tipo] + ' · ', r.fin == null ? h('b', { text: 'en curso' }) : h('b', { class: 'num', text: duracion(r) })),
+          h('small', { text: DIAS[d.getDay()] + ' ' + d.getDate() + (r.manual ? ' · manual' : ', ' + pad(inicio.getHours()) + ':' + pad(inicio.getMinutes())) }))),
       der, acciones);
   }
   function lista(ul, regs, conAcciones, vacioTxt) {
@@ -625,7 +680,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
 
   function renderResumen() {
     var k = claveMes(new Date()), c = ciclo(k), hoy = new Date();
-    $('rCiclo').textContent = 'Ciclo ' + nombreCiclo(k);
+    $('rCiclo').textContent = nombreCiclo(k);
     $('rPago').textContent = c.pago ? 'Pago ' + fechaCorta(c.pago) : '';
     $('rGanado').textContent = usd(c.calc);
     $('rSoles').replaceChildren('Equivale a ', h('b', { text: soles(c.calc * A.tasa) }), ' (TC ' + A.tasa + ')');
@@ -685,7 +740,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     $('acTitulo').textContent = NOMBRE[r.tipo] + (p ? ' · en pausa' : ' en curso') + ' · ' + usd(monto(r));
     $('acReloj').textContent = reloj(s);
     var nota = $('acNota');
-    if (esShift && s >= SHIFT_SEG) { nota.className = 'alerta'; nota.textContent = 'Llegaste a 1 hora: termina el shift.'; }
+    if (esShift && s >= SHIFT_SEG) { nota.className = 'alerta'; nota.textContent = 'Pasaste 1 hora · sobrante +' + reloj(s - SHIFT_SEG); }
     else if (!esShift && s >= AVISO_FREE_SEG) { nota.className = 'alerta'; nota.textContent = '¿Olvidaste detenerlo? Lleva más de 2 horas.'; }
     else { nota.className = ''; nota.textContent = esShift ? 'Faltan ' + reloj(SHIFT_SEG - s) + ' para la hora' : 'Se cobran los minutos completos'; }
     var ctrl = $('acCtrl');
@@ -698,7 +753,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   }
 
   function renderHistorial() {
-    $('hMes').textContent = nombreCiclo(ui.mes);
+    $('hMes').textContent = nombreCiclo(ui.mes).slice(0, 3) + ' ' + ui.mes.slice(0, 4);
     var c = ciclo(ui.mes);
     tipos($('hTipos'), c);
     lista($('hLista'), c.regs, true, 'No hay registros en este mes.');
@@ -745,13 +800,50 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   }
   function terminar() {
     var r = activo(); if (!r) return;
-    var ahora = Date.now(), s = segCorridos(r, ahora), tope = r.tipo === 'shift' && s > SHIFT_SEG;
-    cambiar(tope ? 'Se guardó 1 hora, lo que dura un shift. Si fue distinto, edítalo.' : NOMBRE[r.tipo] + ' guardado: ' + (r.tipo === 'shift' ? reloj(s) : Math.floor(s / 60) + ' min') + '.', function () {
+    var ahora = Date.now(), s = segCorridos(r, ahora);
+    if (r.tipo === 'shift' && s > SHIFT_SEG) return abrirSobra(ahora, s);
+    guardarFin(r, ahora, s, null);
+  }
+  // Cierra el registro activo. Si es un shift de más de 1 h, guarda 1 h y el sobrante como nuevo(s) shift(s) o como freelance.
+  function guardarFin(r, ahora, s, tipoSobra) {
+    var sobra = Math.floor(s) - SHIFT_SEG;
+    var txt = tipoSobra ? 'Shift de 1 h + sobrante de ' + reloj(sobra) + (tipoSobra === 'shift' ? ' como nuevo shift.' : ' como freelance.')
+      : NOMBRE[r.tipo] + ' guardado: ' + (r.tipo === 'shift' ? reloj(s) : Math.floor(s / 60) + ' min') + '.';
+    cambiar(txt, function () {
       if (pausado(r)) r.pausas[r.pausas.length - 1].h = ahora;
       r.fin = ahora;
-      r.seg = Math.floor(tope ? SHIFT_SEG : s);
+      r.seg = tipoSobra ? SHIFT_SEG : Math.floor(s);
+      if (!tipoSobra) return;
+      var ini = ahora - sobra * 1000, resto = sobra;
+      if (tipoSobra === 'freelance') resto = 0, D.registros.push({ id: 'r' + ahora + 'f', tipo: 'freelance', fecha: ymd(new Date(ini)), inicio: ini, pausas: [], fin: ahora, seg: sobra, tarifa: A.tarifaFree });
+      for (var n = 0; resto > 0; n++) { // un shift dura 1 h: si el sobrante pasa de 1 h, se reparte en varios
+        var seg = Math.min(resto, SHIFT_SEG);
+        D.registros.push({ id: 'r' + ahora + 's' + n, tipo: 'shift', fecha: ymd(new Date(ini)), inicio: ini, pausas: [], fin: ini + seg * 1000, seg: seg, tarifa: A.tarifaShift });
+        ini += seg * 1000; resto -= seg;
+      }
     });
   }
+  var sobraPend = null, tipoSobra = 'shift';
+  function ponerSobra(t) {
+    tipoSobra = t;
+    document.querySelectorAll('[data-sobra]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.sobra === t); });
+    var sobra = Math.floor(sobraPend.s) - SHIFT_SEG;
+    $('psValor').replaceChildren(t === 'shift' ? 'Se pagan ' + reloj(sobra) + ' a tarifa Shift: ' : 'Se pagan ' + Math.floor(sobra / 60) + ' min a tarifa Freelance: ',
+      h('b', { text: usd(t === 'shift' ? sobra / 3600 * A.tarifaShift : Math.floor(sobra / 60) / 60 * A.tarifaFree) }));
+  }
+  function abrirSobra(ahora, s) {
+    sobraPend = { ahora: ahora, s: s };
+    $('psTexto').replaceChildren('El shift duró ', h('b', { text: reloj(s) }), '. Sobrante: ', h('b', { text: reloj(Math.floor(s) - SHIFT_SEG) }), '.');
+    ponerSobra('shift');
+    abrir($('popSobra'));
+  }
+  document.querySelectorAll('[data-sobra]').forEach(function (b) { b.addEventListener('click', function () { ponerSobra(b.dataset.sobra); }); });
+  $('fSobra').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var r = activo(), p = sobraPend;
+    cerrar(); sobraPend = null;
+    if (r && p) guardarFin(r, p.ahora, p.s, tipoSobra);
+  });
   setInterval(function () { if (activo()) renderActivo(); }, 1000);
 
   // ---------- Registros: manual, editar, borrar ----------
