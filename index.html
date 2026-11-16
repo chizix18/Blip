@@ -414,6 +414,17 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   </form>
 </div>
 
+<div class="pop" id="popSobra" role="dialog" aria-labelledby="psTitulo" hidden>
+  <div class="pop-head"><h2 id="psTitulo">¿Qué fue el sobrante?</h2><button class="pop-cerrar" type="button" aria-label="Cerrar">×</button></div>
+  <form id="fSobra" novalidate>
+    <p class="hint ancho sub" id="psTexto"></p>
+    <div class="campo ancho"><label>Guardar como</label><div class="tipo-sel"><button class="chip" type="button" data-sobra="shift">Shift</button><button class="chip" type="button" data-sobra="opi">Freelance OPI</button><button class="chip" type="button" data-sobra="vri">Freelance VRI</button></div></div>
+    <p class="hint ancho sub" id="psValor"></p>
+    <p class="hint ancho">Si cancelas, el cronómetro sigue corriendo.</p>
+    <div class="botones ancho"><button type="button" class="btn" data-cerrar>Cancelar</button><button type="submit" class="btn primary">Guardar</button></div>
+  </form>
+</div>
+
 <div class="pop" id="popCiclo" role="dialog" aria-labelledby="pcTitulo" hidden>
   <div class="pop-head"><h2 id="pcTitulo">Ciclo</h2><button class="pop-cerrar" type="button" aria-label="Cerrar">×</button></div>
   <form id="fCiclo" novalidate>
@@ -812,12 +823,42 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   function terminar() {
     var r = activo(); if (!r) return;
     var ahora = Date.now(), s = segCorridos(r, ahora);
-    cambiar(nombreReg(r) + ' guardado: ' + (r.tipo === 'shift' ? reloj(s) : Math.floor(s / 60) + ' min') + '.', function () {
+    if (r.continua) return abrirSobra(ahora, s); // el sobrante tras el :00: preguntar qué fue
+    cerrarReg(r, ahora, s, null);
+  }
+  // modo: null = queda como está; 'opi' o 'vri' = el sobrante fue una llamada freelance
+  function cerrarReg(r, ahora, s, modo) {
+    var txt = modo ? 'Sobrante guardado como ' + NOMBRE[modo] + ': ' + Math.floor(s / 60) + ' min.'
+      : nombreReg(r) + ' guardado: ' + (r.tipo === 'shift' ? reloj(s) : Math.floor(s / 60) + ' min') + '.';
+    cambiar(txt, function () {
       if (pausado(r)) r.pausas[r.pausas.length - 1].h = ahora;
+      if (modo) { r.tipo = 'freelance'; r.modo = modo; r.tarifa = tarifaDe(modo); delete r.bloque; delete r.continua; }
       r.fin = ahora;
       r.seg = Math.floor(s);
     });
   }
+  var sobraPend = null, tipoSobra = 'shift';
+  function ponerSobra(t) {
+    tipoSobra = t;
+    document.querySelectorAll('[data-sobra]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.sobra === t); });
+    var s = sobraPend.s, min = Math.floor(s / 60);
+    $('psValor').replaceChildren(t === 'shift' ? 'Como shift (cada segundo): ' : 'Como ' + NOMBRE[t] + ' (' + min + ' min): ',
+      h('b', { text: usd(t === 'shift' ? s / 3600 * A.tarifaShift : min / 60 * tarifaDe(t)) }));
+  }
+  function abrirSobra(ahora, s) {
+    var r = activo();
+    sobraPend = { ahora: ahora, s: s };
+    $('psTexto').replaceChildren('Te pasaste ', h('b', { text: reloj(s) }), ' del shift de las ' + pad(new Date(r.bloque - 3600e3).getHours()) + ':00.');
+    ponerSobra('shift');
+    abrir($('popSobra'));
+  }
+  document.querySelectorAll('[data-sobra]').forEach(function (b) { b.addEventListener('click', function () { ponerSobra(b.dataset.sobra); }); });
+  $('fSobra').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var r = activo(), p = sobraPend;
+    cerrar(); sobraPend = null;
+    if (r && p) cerrarReg(r, p.ahora, p.s, tipoSobra === 'shift' ? null : tipoSobra);
+  });
   // Un shift es un bloque de reloj (:00 a :00). Al llegar al :00 se cierra solo y, si seguías trabajando,
   // continúa con el bloque siguiente. Si el cronómetro estaba en pausa, o pasó más de 1 h sin abrir la app, no continúa.
   function rodar() {
