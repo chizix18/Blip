@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Lolito</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Crect width='34' height='34' rx='9' fill='%23b4532a'/%3E%3Cpath d='M9 19v-3a8 8 0 0 1 16 0v3' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3Crect x='7' y='18' width='5' height='7' rx='2' fill='%23fff'/%3E%3Crect x='22' y='18' width='5' height='7' rx='2' fill='%23fff'/%3E%3C/svg%3E">
+<script>try { var t = localStorage.getItem('lolito.tema'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 [hidden] { display: none !important; }
@@ -34,6 +35,19 @@ h2 { font-size: 18px; font-weight: 700; }
 .num { font-family: var(--f-num); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); font-weight: 600; white-space: nowrap; }
 .hint { color: var(--muted); font-size: 13px; margin: 0; }
+/* Frases con montos: letra de texto (más amigable que la monoespaciada), cifras alineadas */
+.sub { font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sub b { color: var(--ink); font-weight: 600; }
+
+/* Gatito: en computadora fijo en la esquina; en celular al final de la página */
+.gato { width: 88px; align-self: flex-end; margin-top: -8px; pointer-events: none; }
+.gato .pelaje { fill: #ffffff; stroke: color-mix(in srgb, var(--ink) 55%, transparent); stroke-width: 1.6; stroke-linejoin: round; }
+.gato .trazo { fill: none; stroke: color-mix(in srgb, var(--ink) 55%, transparent); stroke-width: 1.4; stroke-linecap: round; }
+.gato .rosa { fill: color-mix(in srgb, var(--accent) 35%, #ffffff); }
+.gato .ojo { fill: #2b2620; }
+.gato .lap { fill: color-mix(in srgb, var(--ink) 82%, var(--bg)); }
+.gato .logo { fill: var(--accent); }
+@media (min-width: 1200px) { .gato { position: fixed; right: 26px; bottom: 18px; margin: 0; width: 104px; } }
 button, input { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -192,7 +206,14 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   .go .play { margin: 0; }
 }
 @media (max-width: 360px) {
-  .tc input { width: 46px; }
+  .tc input { width: 52px; }
+  .tc { padding-left: 8px; }
+  .tc button { min-width: 22px; }
+  .extra { gap: 4px; }
+  .ico { width: 30px; height: 30px; }
+  .marca h1 { font-size: 20px; }
+  .app-bar { column-gap: 6px; }
+  .marca svg { width: 28px; height: 28px; }
   .marca small { font-size: 10.5px; }
   .dos { gap: 8px; }
   .mini { padding: 8px 9px; }
@@ -214,6 +235,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     </nav>
     <div class="extra">
       <label class="tc" id="tcLabel">TC <input id="tc" type="number" step="0.0001" min="0.01" inputmode="decimal" aria-label="Tipo de cambio, soles por dólar"><button type="button" id="tcAuto" title="Traer el tipo de cambio del día" aria-label="Traer el tipo de cambio del día">↻</button></label>
+      <button class="ico" type="button" id="btnTema" title="Cambiar a modo claro u oscuro" aria-label="Cambiar a modo claro u oscuro"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></button>
       <button class="ico" type="button" id="btnAjustes" title="Ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     </div>
   </header>
@@ -229,7 +251,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     <div class="cols">
       <section class="panel ficha">
         <div class="panel-head"><span class="eyebrow" id="rCiclo">Ciclo</span><span class="eyebrow" id="rPago"></span></div>
-        <div><div class="grande num" id="rGanado">$0.00</div><p class="hint num" id="rSoles"></p><p class="hint num" id="rNeto"></p></div>
+        <div><div class="grande num" id="rGanado">$0.00</div><p class="hint sub" id="rSoles"></p><p class="hint sub" id="rNeto"></p></div>
         <div class="barra"><i id="rBarra" style="width:0"></i></div>
         <p class="frase" id="rFrase"></p>
         <label class="meta-campo">Meta del ciclo (USD) <input id="rMeta" type="number" min="0" step="1" inputmode="decimal"></label>
@@ -283,6 +305,18 @@ tfoot td { font-weight: 700; border-bottom: 0; }
       </table></div>
     </section>
   </main>
+
+  <svg class="gato" viewBox="0 0 120 92" aria-hidden="true">
+    <path class="pelaje" d="M38 30 L35 9 L52 21 Q60 18 68 21 L85 9 L82 30 Q88 40 84 52 L36 52 Q32 40 38 30 Z"/>
+    <path class="rosa" d="M39 15 L40 25 L47 21 Z M81 15 L80 25 L73 21 Z"/>
+    <ellipse class="ojo" cx="50" cy="36" rx="2.6" ry="3.2"/><ellipse class="ojo" cx="70" cy="36" rx="2.6" ry="3.2"/>
+    <path class="rosa" d="M57.5 42 h5 l-2.5 3 z"/>
+    <path class="trazo" d="M60 45 q-3 4 -6 2 M60 45 q3 4 6 2 M44 42 h-10 M44 45 l-9 3 M76 42 h10 M76 45 l9 3"/>
+    <rect class="lap" x="24" y="50" width="72" height="34" rx="4"/>
+    <circle class="logo" cx="60" cy="67" r="4"/>
+    <rect class="lap" x="14" y="84" width="92" height="5" rx="2.5"/>
+    <ellipse class="pelaje" cx="44" cy="51" rx="6" ry="4"/><ellipse class="pelaje" cx="76" cy="51" rx="6" ry="4"/>
+  </svg>
 </div>
 
 <div class="velo" id="velo" hidden></div>
@@ -303,11 +337,11 @@ tfoot td { font-weight: 700; border-bottom: 0; }
 <div class="pop" id="popCiclo" role="dialog" aria-labelledby="pcTitulo" hidden>
   <div class="pop-head"><h2 id="pcTitulo">Ciclo</h2><button class="pop-cerrar" type="button" aria-label="Cerrar">×</button></div>
   <form id="fCiclo" novalidate>
-    <p class="hint ancho num" id="pcCalc"></p>
+    <p class="hint ancho sub" id="pcCalc"></p>
     <div class="campo"><label for="pcPagado">Pagado (USD)</label><input id="pcPagado" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Aún no"></div>
     <div class="campo"><label for="pcPago">Fecha de pago</label><input id="pcPago" type="date"></div>
     <div class="campo ancho"><label for="pcMeta">Meta del ciclo (USD)</label><input id="pcMeta" type="number" min="0" step="1" inputmode="decimal"></div>
-    <p class="hint ancho num" id="pcNeto"></p>
+    <p class="hint ancho sub" id="pcNeto"></p>
     <div class="botones ancho"><button type="button" class="btn" data-cerrar>Cancelar</button><button type="submit" class="btn primary">Guardar</button></div>
   </form>
 </div>
@@ -479,8 +513,8 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     $('rCiclo').textContent = 'Ciclo ' + nombreCiclo(k);
     $('rPago').textContent = c.pago ? 'Pago ' + fechaCorta(c.pago) : '';
     $('rGanado').textContent = usd(c.calc);
-    $('rSoles').textContent = '≈ ' + soles(c.calc * A.tasa) + ' (TC ' + A.tasa + ')';
-    $('rNeto').textContent = 'Te llegaría ' + usd(c.neto) + ' tras comisión';
+    $('rSoles').replaceChildren('Equivale a ', h('b', { text: soles(c.calc * A.tasa) }), ' (TC ' + A.tasa + ')');
+    $('rNeto').replaceChildren('Te llegaría ', h('b', { text: usd(c.neto) }), ' tras la comisión');
     $('rBarra').style.width = (c.meta > 0 ? Math.min(100, c.calc / c.meta * 100) : 0) + '%';
     if (document.activeElement !== $('rMeta')) $('rMeta').value = c.meta || '';
     var frase = $('rFrase');
@@ -772,6 +806,14 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     avisoT = setTimeout(cerrarAviso, 8000);
   }
   $('avisoBtn').addEventListener('click', function () { var fn = deshacer; cerrarAviso(); if (fn) fn(); });
+
+  // ---------- Modo claro / oscuro (se recuerda en este navegador) ----------
+  $('btnTema').addEventListener('click', function () {
+    var raiz = document.documentElement, actual = raiz.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var nuevo = actual === 'dark' ? 'light' : 'dark';
+    raiz.setAttribute('data-theme', nuevo);
+    try { localStorage.setItem('lolito.tema', nuevo); } catch (e) {}
+  });
 
   // ---------- Navegación ----------
   document.querySelectorAll('.tab').forEach(function (b) {
