@@ -2,7 +2,7 @@
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Lolito</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Crect width='34' height='34' rx='9' fill='%23b4532a'/%3E%3Cpath d='M9 19v-3a8 8 0 0 1 16 0v3' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3Crect x='7' y='18' width='5' height='7' rx='2' fill='%23fff'/%3E%3Crect x='22' y='18' width='5' height='7' rx='2' fill='%23fff'/%3E%3C/svg%3E">
 <script>try { var t = localStorage.getItem('lolito.tema'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}</script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Playfair+Display:ital,wght@1,500;1,600;1,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 [hidden] { display: none !important; }
 :root {
@@ -12,7 +12,7 @@
   --ok: #1e7a3c; --warn: #a15c00; --danger: #b3261e;
   --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
-  --f-num: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  --f-num: "Playfair Display", Georgia, serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -32,7 +32,8 @@ body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f
 .wrap { max-width: 1080px; margin: 0 auto; padding: 20px 16px 48px; display: flex; flex-direction: column; gap: 20px; }
 h1, h2 { font-family: var(--f-display); margin: 0; }
 h2 { font-size: 18px; font-weight: 700; }
-.num { font-family: var(--f-num); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.num, .monto, .tc input, .meta-campo input { font-family: var(--f-num); font-style: italic; font-variant-numeric: tabular-nums lining-nums; }
+.num { white-space: nowrap; }
 .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); font-weight: 600; white-space: nowrap; }
 .hint { color: var(--muted); font-size: 13px; margin: 0; }
 /* Frases con montos: letra de texto (más amigable que la monoespaciada), cifras alineadas */
@@ -109,7 +110,7 @@ body::before { left: 0; } body::after { right: 0; transform: scaleY(-1); }
 .filas .reg small { font-size: 12px; }
 .filas .d > b, .filas .d > small { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .filas .der { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
-.monto { font-weight: 600; font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; } /* montos de cada registro: letra de texto */
+.monto { font-weight: 600; font-size: 15px; white-space: nowrap; } /* montos de cada registro */
 .estado { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; color: var(--c); }
 .estado::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
 .e-cobrado { --c: var(--ok); } .e-pendiente { --c: var(--warn); } .e-atrasado { --c: var(--danger); } .e-curso { --c: var(--accent); } .e-vacio, .e-futuro { --c: var(--muted); }
