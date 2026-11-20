@@ -214,8 +214,8 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   .tab[aria-current="page"] { background: color-mix(in srgb, var(--accent) 14%, var(--surface)); color: var(--accent); }
   /* Celular: logo, nombre y botones en una fila; el lema completo debajo */
   .app-bar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 10px; row-gap: 6px; }
-  .marca, .marca > div { display: contents; }
-  .marca small { grid-column: 1 / -1; grid-row: 2; margin-top: 0; }
+  .app-bar .marca, .app-bar .marca > div { display: contents; }
+  .app-bar .marca small { grid-column: 1 / -1; grid-row: 2; margin-top: 0; }
   .extra { grid-column: 3; grid-row: 1; }
   .activo { position: static; }
   body::before, body::after { display: none; }
