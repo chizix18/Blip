@@ -26,7 +26,7 @@ var SUPABASE_KEY = '';
 La clave publicable puede ir en el código: los permisos de la base de datos solo dejan ver a cada usuario sus propios datos. **Nunca pongas la clave secreta (service_role).**
 
 ### 3. Publicar en GitHub Pages
-1. Crea un repositorio nuevo en GitHub y sube `index.html`, `gato.jpg`, `supabase.sql` y este `README.md`.
+1. Crea un repositorio nuevo en GitHub y sube `index.html`, `supabase.sql` y este `README.md`.
 2. En **Settings → Pages**, elige la rama `main` y la carpeta `/ (root)`.
 3. En un minuto la app queda en `https://TU-USUARIO.github.io/NOMBRE-DEL-REPOSITORIO/`.
 

@@ -40,10 +40,6 @@ h2 { font-size: 18px; font-weight: 700; }
 .sub b { color: var(--ink); font-weight: 600; }
 
 /* Gatito: en computadora fijo en la esquina; en celular al final de la página */
-.gato { width: 140px; height: auto; align-self: flex-end; margin-top: -8px; pointer-events: none; mix-blend-mode: multiply; } /* el blanco de la imagen se funde con el fondo */
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .gato { mix-blend-mode: normal; border-radius: 18px; } }
-:root[data-theme="dark"] .gato { mix-blend-mode: normal; border-radius: 18px; } /* en oscuro: como calcomanía */
-@media (min-width: 1400px) { .gato { position: fixed; right: 26px; bottom: 18px; margin: 0; width: 150px; } }
 button, input { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -364,7 +360,6 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     </section>
   </main>
 
-  <img class="gato" src="gato.jpg" alt="" width="140" height="140">
 </div>
 
 <div class="velo" id="velo" hidden></div>
