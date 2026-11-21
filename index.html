@@ -1,30 +1,30 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Lolito</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Crect width='34' height='34' rx='9' fill='%23b4532a'/%3E%3Cpath d='M9 19v-3a8 8 0 0 1 16 0v3' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3Crect x='7' y='18' width='5' height='7' rx='2' fill='%23fff'/%3E%3Crect x='22' y='18' width='5' height='7' rx='2' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Crect width='34' height='34' rx='9' fill='%236e2e34'/%3E%3Cpath d='M9 19v-3a8 8 0 0 1 16 0v3' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3Crect x='7' y='18' width='5' height='7' rx='2' fill='%23fff'/%3E%3Crect x='22' y='18' width='5' height='7' rx='2' fill='%23fff'/%3E%3C/svg%3E">
 <script>try { var t = localStorage.getItem('lolito.tema'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Lora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 [hidden] { display: none !important; }
 :root {
-  --bg: #efe7f0; --surface: #ffffff; --ink: #1f1a21; --muted: #6a5f6c; --line: #ddd1df;
-  --accent: #b4532a; --accent-ink: #ffffff;
-  --shift: #9b7fe0; --free: #8cc63f;
-  --ok: #1e7a3c; --warn: #a15c00; --danger: #b3261e;
+  --bg: #f5e6d1; --surface: #fffaf3; --ink: #2b1a1c; --muted: #7a625e; --line: #e6d2c0;
+  --accent: #6e2e34; --accent-ink: #ffffff;
+  --shift: #b46c72; --free: #5e7b9b;
+  --ok: #2e7d32; --warn: #a15c00; --danger: #d32f1e;
   --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --f-num: "Lora", Georgia, serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #17131a; --surface: #221c25; --ink: #f0e9f1; --muted: #a99dab; --line: #3a3140;
-    --accent: #f08a5d; --accent-ink: #2a1206; --shift: #b9a3ff; --free: #b6e36b;
-    --ok: #5fd38a; --warn: #ffb74d; --danger: #ff8a80; color-scheme: dark;
+    --bg: #1c110d; --surface: #2a1a14; --ink: #f2ecde; --muted: #bba792; --line: #45302a;
+    --accent: #e87305; --accent-ink: #1c110d; --shift: #d9959a; --free: #8fa9c8;
+    --ok: #a3c93a; --warn: #f2c14e; --danger: #ff7a6e; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #17131a; --surface: #221c25; --ink: #f0e9f1; --muted: #a99dab; --line: #3a3140;
-  --accent: #f08a5d; --accent-ink: #2a1206; --shift: #b9a3ff; --free: #b6e36b;
-  --ok: #5fd38a; --warn: #ffb74d; --danger: #ff8a80; color-scheme: dark;
+  --bg: #1c110d; --surface: #2a1a14; --ink: #f2ecde; --muted: #bba792; --line: #45302a;
+  --accent: #e87305; --accent-ink: #1c110d; --shift: #d9959a; --free: #8fa9c8;
+  --ok: #a3c93a; --warn: #f2c14e; --danger: #ff7a6e; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html { scrollbar-gutter: stable; }
@@ -132,6 +132,7 @@ body::before { left: 0; } body::after { right: 0; transform: scaleY(-1); }
 .estado::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
 .e-cobrado { --c: var(--ok); } .e-pendiente { --c: var(--warn); } .e-atrasado { --c: var(--danger); } .e-curso { --c: var(--accent); } .e-vacio, .e-futuro { --c: var(--muted); }
 .vacio { color: var(--muted); font-size: 14px; margin: 0; padding: 6px 0; }
+.editado { font-size: 11px; color: var(--muted); white-space: nowrap; margin-right: 2px; }
 .borrar[data-armado] { color: var(--danger); border-color: var(--danger); }
 
 /* Trabajo */
@@ -243,6 +244,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
   .pop-head { cursor: default; }
   .aviso-deshacer { bottom: calc(76px + env(safe-area-inset-bottom)); }
   .flota { right: 12px; bottom: calc(82px + env(safe-area-inset-bottom)); width: 200px; }
+  body:has(.flota:not(.min)) .wrap { padding-bottom: calc(300px + env(safe-area-inset-bottom)); } /* que lo último se pueda subir por encima de la ventanita */
 }
 @media (max-width: 460px) {
   .panel { padding: 14px; }
@@ -791,7 +793,9 @@ tfoot td { font-weight: 700; border-bottom: 0; }
 
   function filaReg(r, conAcciones) {
     var der = h('div', { class: 'der' }, h('span', { class: 'monto', text: usd(monto(r)) }));
+    var ed = r.editado ? new Date(r.editado) : null;
     var acciones = conAcciones && r.fin != null ? h('div', { class: 'der acciones' },
+      ed ? h('small', { class: 'editado', title: 'Última edición', text: '✎ ' + pad(ed.getDate()) + '/' + pad(ed.getMonth() + 1) + ' ' + horaMin(ed) }) : null,
       h('button', { class: 'chip', type: 'button', text: 'Editar', onclick: function () { abrirReg(r); } }),
       h('button', { class: 'chip borrar', type: 'button', text: 'Borrar', onclick: function (ev) { borrarReg(r, ev.currentTarget); } })) : null;
     var d = deYmd(r.fecha), inicio = new Date(r.inicio);
@@ -1058,7 +1062,7 @@ tfoot td { font-weight: 700; border-bottom: 0; }
     var tope = r.pausas.length ? r.pausas[0].d : ahora;
     if (t > tope) return void ($('piMsg').textContent = r.pausas.length ? 'Debe ser antes de tu primera pausa (' + horaMin(new Date(tope)) + ').' : 'Esa hora aún no llega.');
     cerrar();
-    cambiar('Ingreso corregido a las ' + horaMin(new Date(t)) + '.', function () { r.inicio = t; r.fecha = ymd(new Date(t)); });
+    cambiar('Ingreso corregido a las ' + horaMin(new Date(t)) + '.', function () { r.inicio = t; r.fecha = ymd(new Date(t)); r.editado = Date.now(); });
   });
 
   setInterval(function () { if (activo()) { rodar(); renderActivo(); renderFlota(); } }, 1000);
@@ -1126,7 +1130,10 @@ tfoot td { font-weight: 700; border-bottom: 0; }
         r = { id: 'r' + Date.now(), fecha: f, inicio: deYmd(f).getTime() + 12 * 3600e3, pausas: [], manual: true, tarifa: tarifaDe(tipoForm) };
         r.fin = r.inicio;
         D.registros.push(r);
-      } else if (claseDe(r) !== tipoForm) r.tarifa = tarifaDe(tipoForm); // solo si cambia el tipo se toma la tarifa actual
+      } else {
+        if (claseDe(r) !== tipoForm) r.tarifa = tarifaDe(tipoForm); // solo si cambia el tipo se toma la tarifa actual
+        r.editado = Date.now();
+      }
       r.tipo = tipo; r.modo = modo; r.seg = seg;
       if (d) { r.fecha = f; r.bloque = d.bloque; r.inicio = d.inicio; r.fin = d.fin; }
       else {
