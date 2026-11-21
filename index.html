@@ -311,19 +311,24 @@ tfoot td { font-weight: 700; border-bottom: 0; }
 
   <main class="vista" data-vista="resumen">
     <div class="cols">
+      <div class="col">
       <section class="panel ficha">
         <div class="panel-head"><span class="eyebrow" id="rCiclo">Ciclo</span><span class="eyebrow" id="rPago"></span></div>
         <div><div class="grande num" id="rGanado">$0.00</div><p class="hint sub" id="rSoles"></p><p class="hint sub" id="rNeto"></p></div>
         <div class="barra"><i id="rBarra" style="width:0"></i></div>
         <p class="frase" id="rFrase"></p>
         <p class="hint sub" id="rPlan" hidden></p>
-        <label class="meta-campo">Meta del ciclo (USD) <input id="rMeta" type="number" min="0" step="1" inputmode="decimal"></label>
         <div class="dos" id="rTipos"></div>
       </section>
+      <section class="panel">
+        <div class="panel-head"><h2>Cobros</h2></div>
+        <ul class="filas" id="rCobros"></ul>
+      </section>
+      </div>
       <div class="col">
         <section class="panel">
-          <div class="panel-head"><h2>Cobros</h2></div>
-          <ul class="filas" id="rCobros"></ul>
+          <div class="panel-head"><h2>Meta del ciclo</h2></div>
+          <label class="meta-campo">En dólares (USD) <input id="rMeta" type="number" min="0" step="1" inputmode="decimal"></label>
         </section>
         <section class="panel">
           <div class="panel-head"><h2>Hoy</h2><span class="num" id="rHoyTotal"></span></div>
